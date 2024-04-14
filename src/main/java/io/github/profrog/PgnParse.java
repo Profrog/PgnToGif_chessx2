@@ -110,7 +110,7 @@ public class PgnParse {
         //chess_image[12] = black_king_image.png..jpg..bmp..
     }
 
-    public static void onlyParser(String pgn_data0, int black_bottom_opt, int wanttosee_table_opt)
+    public static void onlyParser(String pgn_data0, int black_bottom_opt, int want_seeing_table_opt)
     {
         try {
             cur_chess_table = new int[][]{ //definition first state of board, white piece 1~6, black piece 1~6
@@ -133,7 +133,7 @@ public class PgnParse {
             piece_data = new HashMap<>();
 
 
-            piece_data.put("P",1); //piece data add
+            piece_data.put("P",1); //piece meta data is added
             piece_data.put("N",2);
             piece_data.put("B",3);
             piece_data.put("R",4);
@@ -182,7 +182,7 @@ public class PgnParse {
             }
 
 
-            String move_file ="";
+            StringBuilder move_file = new StringBuilder();
             int load_check = 1;
 
             for(int idx = 0; idx < raw_data1[raw_data1.length -1].length(); ++idx)
@@ -199,17 +199,17 @@ public class PgnParse {
 
                 else if(load_check == 1)
                 {
-                    move_file += raw_data1[raw_data1.length -1].charAt(idx);
+                    move_file.append(raw_data1[raw_data1.length -1].charAt(idx));
                 }
 
-                if(raw_data1[raw_data1.length -1].charAt(idx) == '}')
+                if(raw_data1[raw_data1.length -1].charAt(idx) == '}') //lichess format change to gif_chessx2 format
                 {
                     load_check = 1;
                     ++idx;
                 }
             }
 
-            String[] move_rdata = move_file.split("\\.");
+            String[] move_rdata = move_file.toString().split("\\.");
 
             for(int idx = 1 ; idx < move_rdata.length; ++idx)
             {
@@ -225,7 +225,7 @@ public class PgnParse {
                 //white_piece case
                 check_table_mem.add(pgnAlgorithm(white_move.get(idx),0,black_bottom_opt)); //1,3,5... white piece moving control
 
-                if(wanttosee_table_opt > 0)
+                if(want_seeing_table_opt > 0)
                 {
                     showTableValue(check_table_mem.size()-1);
                 }
@@ -236,7 +236,7 @@ public class PgnParse {
                     check_table_mem.add(pgnAlgorithm(black_move.get(idx),1,black_bottom_opt)); //2,4,6.. black piece moving control
                 }
 
-                if(wanttosee_table_opt > 0)
+                if(want_seeing_table_opt > 0)
                 {
                     showTableValue(check_table_mem.size()-1);
                 }
@@ -253,12 +253,12 @@ public class PgnParse {
     public static int[][] pgnAlgorithm(String move0, int weight0,int black_bottom_opt)
     {
         int piece_index = 0;
-        int piece_value = 1 + weight0*6; //defauls piece is pawn
+        int piece_value = 1 + weight0*6; //default piece is pawn
         int row_index = -1;
         int col_index = -1;
-        Boolean xcountrol = false;
+        boolean xcountrol = false;
 
-        if(move0 == "O-O")
+        if(move0.equals("O-O"))
         {
             cur_chess_table[bottom_p - (7*weight0)][right_p-3] = 0; //king -> (-)
             cur_chess_table[bottom_p - (7*weight0)][right_p] = 0; //right rook -> (-)
@@ -266,7 +266,7 @@ public class PgnParse {
             cur_chess_table[bottom_p - (7*weight0)][right_p-1] = piece_data.get("K") + weight0*6;
         }
 
-        else if(move0 == "O-O-O")
+        else if(move0.equals("O-O-O"))
         {
             cur_chess_table[bottom_p - (7*weight0)][left_p+4] = 0; //king -> (-)
             cur_chess_table[bottom_p - (7*weight0)][left_p] = 0; //right rook -> (-)
@@ -279,11 +279,13 @@ public class PgnParse {
                 try {
                     char cur_char = move0.charAt(piece_index);
                     char x_char = '@';
+                    boolean pawn_state = true;
 
-                    while (piece_index < move0.length()-2) { //contorl current string of chess piece
+                    while (piece_index < move0.length()-2) { //control current string of chess piece
 
                         if (Character.isUpperCase(cur_char)) { //definition what piece
-                            piece_value = piece_data.get(cur_char) + 6 * weight0;
+                            piece_value = piece_data.get("" + cur_char) + 6 * weight0;
+                            pawn_state = false;
                         }
 
                         if (cur_char == '+') //check state, visual event#1,example
@@ -299,12 +301,13 @@ public class PgnParse {
                             xcountrol = true;
                         }
 
-                        else if(cur_char == '=') //promotion control
+                        else if(cur_char == '=' && (!pawn_state)) //promotion control
                         {
-                            col_index = piece_data.get(move0.charAt(0));
-                            row_index = piece_data.get(move0.charAt(1)); //charat(2) is '=', example h8=Q
-                            piece_value = piece_data.get(move0.charAt(3))+ 6 * weight0;
-                            cur_chess_table[row_index][col_index] = piece_value;
+                            col_index = piece_data.get("" + move0.charAt(0));
+                            row_index = piece_data.get("" + move0.charAt(1)); //charat(2) is '=', example h8=Q
+                            piece_value = piece_data.get("" + move0.charAt(3))+ 6 * weight0;
+
+                            setChessTable(piece_value,row_index,col_index); //cur_chess_table[row_index][col_index] = piece_value;
                             return cur_chess_table;
                         }
 
@@ -317,14 +320,14 @@ public class PgnParse {
 
                         //control piece's next position
                         cur_char = move0.charAt(piece_index); //get col_data from pgn
-                        col_index = piece_data.get(cur_char);
+                        col_index = piece_data.get("" + cur_char);
                         if (col_index < 0 || col_index >= 8) {
                             logger.info("error in col_index " + col_index);
                             logger.info("cur char is " + cur_char);
                         }
 
                         cur_char = move0.charAt(++piece_index); //get row_data from pgn
-                        row_index = piece_data.get(cur_char);
+                        row_index = piece_data.get("" + cur_char);
                         if (row_index < 0 || row_index >= 8) {
                             logger.info("error in col_index " + row_index);
                             logger.info("cur char is " + cur_char);
@@ -333,16 +336,105 @@ public class PgnParse {
                         cur_chess_table[row_index][col_index] = piece_value;
 
 
-                        //contorl piece's previous position
-                        if(piece_value == 1) //white pawn case
+                        //control piece's previous position
+                        boolean previous_move = false;
+                        if(piece_value == 1 || piece_value == 7) //pawn case control
                         {
                             if(xcountrol) //catch other piece
                             {
                                 int[][] tmp_array = {{1,-1},{1,1}};
-                                calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
+                                previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
+                            }
+
+                            else
+                            {
+                                int[][] tmp_array = {{1,0}};
+                                previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
                             }
                         }
 
+                        else if(piece_value == 2 || piece_value == 8) //night case control
+                        {
+                                int[][] tmp_array = {{2,1},{2,-1},{1,2},{1,-2},{-1,2},{-1,-2},{-2,1},{-2,-1}};
+                                previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
+                        }
+
+
+                        else if(piece_value == 3 || piece_value == 9) //bishop case control
+                        {
+                            int[][] tmp_array = new int[28][2];
+                            int[][] multiple = {{1,1},{1,-1},{-1,1},{-1,-1}};
+                            for(int cnt = 1; cnt < board_size; ++cnt)
+                            {
+                               for(int cnt2 = 0; cnt2 < multiple.length; ++cnt2)
+                               {
+                                   int tmp_array_index = (cnt-1)*multiple.length + cnt2;
+                                   tmp_array[tmp_array_index][0] = cnt * multiple[cnt2][0];
+                                   tmp_array[tmp_array_index][1] = cnt * multiple[cnt2][1];
+                               }
+
+                            }
+
+                            previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
+                        }
+
+                        else if(piece_value == 4 || piece_value == 10) //rook case control
+                        {
+                            int[][] tmp_array = new int[28][2];
+                            int[][] multiple = {{1,0},{-1,0},{0,1},{0,-1}};
+                            for(int cnt = 1; cnt < board_size; ++cnt)
+                            {
+                                for(int cnt2 = 0; cnt2 < multiple.length; ++cnt2)
+                                {
+                                    int tmp_array_index = (cnt-1)*multiple.length + cnt2;
+                                    tmp_array[tmp_array_index][0] = cnt * multiple[cnt2][0];
+                                    tmp_array[tmp_array_index][1] = cnt * multiple[cnt2][1];
+                                }
+
+                            }
+
+                            previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
+                        }
+
+                        else if(piece_value == 5 || piece_value == 11) //queen case control
+                        {
+                            int[][] tmp_array = new int[56][2];
+                            int[][] multiple = {{1,0},{-1,0},{0,1},{0,-1},{1,0},{-1,0},{0,1},{0,-1}};
+                            for(int cnt = 1; cnt < board_size; ++cnt)
+                            {
+                                for(int cnt2 = 0; cnt2 < multiple.length; ++cnt2)
+                                {
+                                    int tmp_array_index = (cnt-1)*multiple.length + cnt2;
+                                    tmp_array[tmp_array_index][0] = cnt * multiple[cnt2][0];
+                                    tmp_array[tmp_array_index][1] = cnt * multiple[cnt2][1];
+                                }
+
+                            }
+
+                            previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
+                        }
+
+                        else if(piece_value == 6 || piece_value == 12) //king case control
+                        {
+                            int[][] tmp_array = new int[8][2];
+                            int[][] multiple = {{1,0},{-1,0},{0,1},{0,-1},{1,0},{-1,0},{0,1},{0,-1}};
+                            for(int cnt = 1; cnt < 2; ++cnt)
+                            {
+                                for(int cnt2 = 0; cnt2 < multiple.length; ++cnt2)
+                                {
+                                    int tmp_array_index = (cnt-1)*multiple.length + cnt2;
+                                    tmp_array[tmp_array_index][0] = cnt * multiple[cnt2][0];
+                                    tmp_array[tmp_array_index][1] = cnt * multiple[cnt2][1];
+                                }
+
+                            }
+
+                            previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
+                        }
+
+
+                        if(!previous_move)
+                            logger.info("error in process " + move0);
 
 
                 } catch (Exception e) {
@@ -374,31 +466,30 @@ public class PgnParse {
     public  static  boolean calculatePreviousMove(int[][] tmp_array, int row_index, int col_index, int piece_value, char x_char)
     {
         try {
-
             int black_opt = 1;
 
-            if(piece_value > 6)
+            if(piece_value > 6) //black piece num :7 ~ 12
             {
                 black_opt = -1;
             }
 
             for (int cnt = 0; cnt < tmp_array.length; ++cnt) {
-                int prv_row_index = row_index + tmp_array[cnt][0] * black_opt;
-                int prv_col_index = col_index + tmp_array[cnt][1];
+
+                int bargain_row = tmp_array[cnt][0] * black_opt * (-1);
+                int bargain_col = tmp_array[cnt][1] * (-1);
+                int prv_row_index = row_index + bargain_row;
+                int prv_col_index = col_index + bargain_col;
 
                 int match_row_index = prv_row_index;
                 int match_col_index = prv_col_index;
 
                 if (Character.isAlphabetic(x_char)) {
-                    prv_col_index = piece_data.get(x_char);
+                    prv_col_index = piece_data.get("" + x_char);
                 } else if (Character.isDigit(x_char)) {
-                    prv_row_index = piece_data.get(x_char);
+                    prv_row_index = piece_data.get("" + x_char);
                 }
 
                 if ((top_p <= prv_row_index) && (prv_row_index <= bottom_p)) {
-
-
-
 
                     if (cur_chess_table[prv_row_index][prv_col_index] == 0)
                     {
@@ -409,7 +500,7 @@ public class PgnParse {
                    {
                        if((prv_row_index == match_row_index) && (prv_col_index == match_col_index))
                        {
-                           cur_chess_table[prv_row_index][prv_col_index] = 0;
+                           setChessTable(piece_value,prv_row_index,prv_col_index); //cur_chess_table[prv_row_index][prv_col_index] = 0;
                            return true;
                        }
                    }
@@ -435,6 +526,11 @@ public class PgnParse {
             System.out.println();
             System.out.println();
         }
+    }
+
+    public static void setChessTable(int piece_value, int row, int col)
+    {
+        cur_chess_table[board_size - row][col] = piece_value;
     }
 
     public static void main(String[] args){
