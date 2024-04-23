@@ -43,7 +43,7 @@ public class PgnParse {
 
     public PgnParse()
     {
-        logger.info("parser init");
+        System.out.println("parser init");
     }
 
     public static void onlyParser(String pgn_data0, int black_bottom_opt, int want_seeing_table_opt)
@@ -264,136 +264,141 @@ public class PgnParse {
                         ++piece_index;
                     }
 
-                        //control piece's next position
-                        cur_char = move0.charAt(piece_index); //get col_data from pgn
-                        col_index = piece_data.get("" + cur_char);
-                        if (col_index < 0 || col_index >= 8) {
-                            logger.info("error in col_index " + col_index);
-                            logger.info("cur char is " + cur_char);
-                        }
+                    if(!xcountrol)
+                    {
+                        x_char = '@';
+                    }
 
-                        ++piece_index;
-                        cur_char = move0.charAt(piece_index); //get row_data from pgn
-                        row_index = piece_data.get("" + cur_char);
+                    //control piece's next position
+                    cur_char = move0.charAt(piece_index); //get col_data from pgn
+                    col_index = piece_data.get("" + cur_char);
+                    if (col_index < 0 || col_index >= 8) {
+                        System.out.println("error in col_index " + col_index);
+                        System.out.println("cur char is " + cur_char);
+                    }
 
-                        if (row_index < 0 || row_index >= 8) {
-                            logger.info("error in col_index " + row_index);
-                            logger.info("cur char is " + cur_char);
-                        }
+                    ++piece_index;
+                    cur_char = move0.charAt(piece_index); //get row_data from pgn
+                    row_index = piece_data.get("" + cur_char);
 
-                        //logger.info(String.valueOf(row_index) + " " + String.valueOf(col_index));
-                        setChessTable(piece_value,getRealRow(row_index),col_index);
+                    if (row_index < 0 || row_index >= 8) {
+                        System.out.println("error in col_index " + row_index);
+                        System.out.println("cur char is " + cur_char);
+                    }
 
-                        //control piece's previous position
-                        boolean previous_move = false;
-                        if(piece_value == 1 || piece_value == 7) //pawn case control
+                    //System.out.println(String.valueOf(row_index) + " " + String.valueOf(col_index));
+                    setChessTable(piece_value,getRealRow(row_index),col_index);
+
+                    //control piece's previous position
+                    boolean previous_move = false;
+                    if(piece_value == 1 || piece_value == 7) //pawn case control
+                    {
+                        if(xcountrol) //catch other piece
                         {
-                            if(xcountrol) //catch other piece
-                            {
-                                int[][] tmp_array = {{1,-1},{1,1}};
-                                previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
-                            }
-
-                            else
-                            {
-                                int[][] tmp_array = new int[2][2];
-                                tmp_array[0][0] = 1;
-                                tmp_array[0][1] = 0;
-                                tmp_array[1][0] = 1;
-                                tmp_array[1][1] = 0;
-
-                                if(pawn_first_move[piece_value/7].charAt(col_index) == '0')
-                                {
-                                    tmp_array[1][0] = 2;
-                                    pawn_first_move[piece_value/7].setCharAt(col_index, '1');
-                                }
-
-                                previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
-                            }
+                            int[][] tmp_array = {{1,-1},{1,1}};
+                            previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
                         }
 
-                        else if(piece_value == 2 || piece_value == 8) //night case control
+                        else
                         {
-                                int[][] tmp_array = {{2,1},{2,-1},{1,2},{1,-2},{-1,2},{-1,-2},{-2,1},{-2,-1}};
-                                previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
-                        }
+                            int[][] tmp_array = new int[2][2];
+                            tmp_array[0][0] = 1;
+                            tmp_array[0][1] = 0;
+                            tmp_array[1][0] = 1;
+                            tmp_array[1][1] = 0;
 
-
-                        else if(piece_value == 3 || piece_value == 9) //bishop case control
-                        {
-                            int[][] tmp_array = new int[28][2];
-                            int[][] multiple = {{1,1},{1,-1},{-1,1},{-1,-1}};
-                            for(int cnt = 1; cnt < board_size; ++cnt)
+                            if(pawn_first_move[piece_value/7].charAt(col_index) == '0')
                             {
-                               for(int cnt2 = 0; cnt2 < multiple.length; ++cnt2)
-                               {
-                                   int tmp_array_index = (cnt-1)*multiple.length + cnt2;
-                                   tmp_array[tmp_array_index][0] = cnt * multiple[cnt2][0];
-                                   tmp_array[tmp_array_index][1] = cnt * multiple[cnt2][1];
-                               }
-
+                                tmp_array[1][0] = 2;
+                                pawn_first_move[piece_value/7].setCharAt(col_index, '1');
                             }
 
                             previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
                         }
+                    }
 
-                        else if(piece_value == 4 || piece_value == 10) //rook case control
-                        {
-                            int[][] tmp_array = new int[28][2];
-                            int[][] multiple = {{1,0},{-1,0},{0,1},{0,-1}};
-                            for(int cnt = 1; cnt < board_size; ++cnt)
-                            {
-                                for(int cnt2 = 0; cnt2 < multiple.length; ++cnt2)
-                                {
-                                    int tmp_array_index = (cnt-1)*multiple.length + cnt2;
-                                    tmp_array[tmp_array_index][0] = cnt * multiple[cnt2][0];
-                                    tmp_array[tmp_array_index][1] = cnt * multiple[cnt2][1];
-                                }
-
-                            }
-
+                    else if(piece_value == 2 || piece_value == 8) //night case control
+                    {
+                            int[][] tmp_array = {{2,1},{2,-1},{1,2},{1,-2},{-1,2},{-1,-2},{-2,1},{-2,-1}};
                             previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
+                    }
+
+
+                    else if(piece_value == 3 || piece_value == 9) //bishop case control
+                    {
+                        int[][] tmp_array = new int[28][2];
+                        int[][] multiple = {{1,1},{1,-1},{-1,1},{-1,-1}};
+                        for(int cnt = 1; cnt < board_size; ++cnt)
+                        {
+                           for(int cnt2 = 0; cnt2 < multiple.length; ++cnt2)
+                           {
+                               int tmp_array_index = (cnt-1)*multiple.length + cnt2;
+                               tmp_array[tmp_array_index][0] = cnt * multiple[cnt2][0];
+                               tmp_array[tmp_array_index][1] = cnt * multiple[cnt2][1];
+                           }
+
                         }
 
-                        else if(piece_value == 5 || piece_value == 11) //queen case control
-                        {
-                            int[][] tmp_array = new int[56][2];
-                            int[][] multiple = {{1,0},{-1,0},{0,1},{0,-1},{1,0},{-1,0},{0,1},{0,-1}};
-                            for(int cnt = 1; cnt < board_size; ++cnt)
-                            {
-                                for(int cnt2 = 0; cnt2 < multiple.length; ++cnt2)
-                                {
-                                    int tmp_array_index = (cnt-1)*multiple.length + cnt2;
-                                    tmp_array[tmp_array_index][0] = cnt * multiple[cnt2][0];
-                                    tmp_array[tmp_array_index][1] = cnt * multiple[cnt2][1];
-                                }
+                        previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
+                    }
 
+                    else if(piece_value == 4 || piece_value == 10) //rook case control
+                    {
+                        int[][] tmp_array = new int[28][2];
+                        int[][] multiple = {{1,0},{-1,0},{0,1},{0,-1}};
+                        for(int cnt = 1; cnt < board_size; ++cnt)
+                        {
+                            for(int cnt2 = 0; cnt2 < multiple.length; ++cnt2)
+                            {
+                                int tmp_array_index = (cnt-1)*multiple.length + cnt2;
+                                tmp_array[tmp_array_index][0] = cnt * multiple[cnt2][0];
+                                tmp_array[tmp_array_index][1] = cnt * multiple[cnt2][1];
                             }
 
-                            previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
                         }
 
-                        else if(piece_value == 6 || piece_value == 12) //king case control
-                        {
-                            int[][] tmp_array = new int[8][2];
-                            int[][] multiple = {{1,0},{-1,0},{0,1},{0,-1},{1,0},{-1,0},{0,1},{0,-1}};
-                            for(int cnt = 1; cnt < 2; ++cnt)
-                            {
-                                for(int cnt2 = 0; cnt2 < multiple.length; ++cnt2)
-                                {
-                                    int tmp_array_index = (cnt-1)*multiple.length + cnt2;
-                                    tmp_array[tmp_array_index][0] = cnt * multiple[cnt2][0];
-                                    tmp_array[tmp_array_index][1] = cnt * multiple[cnt2][1];
-                                }
+                        previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
+                    }
 
+                    else if(piece_value == 5 || piece_value == 11) //queen case control
+                    {
+                        int[][] tmp_array = new int[56][2];
+                        int[][] multiple = {{1,0},{-1,0},{0,1},{0,-1},{1,0},{-1,0},{0,1},{0,-1}};
+                        for(int cnt = 1; cnt < board_size; ++cnt)
+                        {
+                            for(int cnt2 = 0; cnt2 < multiple.length; ++cnt2)
+                            {
+                                int tmp_array_index = (cnt-1)*multiple.length + cnt2;
+                                tmp_array[tmp_array_index][0] = cnt * multiple[cnt2][0];
+                                tmp_array[tmp_array_index][1] = cnt * multiple[cnt2][1];
                             }
 
-                            previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
                         }
 
+                        previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
+                    }
 
-                        //if(!previous_move)
-                            //logger.info("error in process " + move0);
+                    else if(piece_value == 6 || piece_value == 12) //king case control
+                    {
+                        int[][] tmp_array = new int[8][2];
+                        int[][] multiple = {{1,0},{-1,0},{0,1},{0,-1},{1,0},{-1,0},{0,1},{0,-1}};
+                        for(int cnt = 1; cnt < 2; ++cnt)
+                        {
+                            for(int cnt2 = 0; cnt2 < multiple.length; ++cnt2)
+                            {
+                                int tmp_array_index = (cnt-1)*multiple.length + cnt2;
+                                tmp_array[tmp_array_index][0] = cnt * multiple[cnt2][0];
+                                tmp_array[tmp_array_index][1] = cnt * multiple[cnt2][1];
+                            }
+
+                        }
+
+                        previous_move = calculatePreviousMove(tmp_array,row_index,col_index,piece_value,x_char);
+                    }
+
+
+                    //if(!previous_move)
+                        //System.out.println("error in process " + move0);
 
 
                 } catch (Exception e) {
@@ -434,52 +439,55 @@ public class PgnParse {
 
             for (int cnt = 0; cnt < tmp_array.length; ++cnt) {
 
-                int bargain_row = tmp_array[cnt][0] * black_opt * (-1);
-                int bargain_col = tmp_array[cnt][1] * (-1);
-                int prv_row_index = getRealRow(row_index + bargain_row);
-                int prv_col_index = col_index + bargain_col;
-
-                logger.info(String.valueOf(prv_row_index) + " " + String.valueOf(prv_col_index));
+                int bargain_row = tmp_array[cnt][0] * black_opt;
+                int bargain_col = tmp_array[cnt][1] * black_opt;
+                int prv_row_index = row_index - bargain_row;
+                int prv_col_index = col_index - bargain_col;
 
                 int match_row_index = prv_row_index;
                 int match_col_index = prv_col_index;
 
                 if (Character.isAlphabetic(x_char)) {
-                    prv_col_index = piece_data.get("" + x_char);
+                    match_col_index = piece_data.get("" + x_char);
                 } else if (Character.isDigit(x_char)) {
-                    prv_row_index = piece_data.get("" + x_char);
+                    match_row_index = piece_data.get("" + x_char);
                 }
 
-                if ((top_p <= prv_row_index) && (prv_row_index <= bottom_p)) {
+                //System.out.println(String.valueOf(piece_value) + " " +String.valueOf(bargain_row) + " " + String.valueOf(bargain_col));
+                System.out.println(String.valueOf(piece_value) + " " +String.valueOf(prv_row_index) + " " + String.valueOf(prv_col_index));
+                System.out.println(String.valueOf(piece_value) + " " +String.valueOf(match_row_index) + " " + String.valueOf(match_col_index));
+                debug_piece(prv_row_index,prv_col_index);
 
-                    //setChessTable(piece_value,prv_row_index,prv_col_index);
-                    //showTableValue(-1);
 
-                    if (cur_chess_table[prv_row_index][prv_col_index] == 0)
-                    {
+                //setChessTable(piece_value,prv_row_index,prv_col_index);
+                //showTableValue(-1);
 
-                    }
+                if (cur_chess_table[getRealRow(prv_row_index)][prv_col_index] == 0)
+                {
 
-                   else if(cur_chess_table[prv_row_index][prv_col_index] == piece_value)
-                   {
-                       setChessTable(0,prv_row_index,prv_col_index);
-                       showTableValue(-1);
-
-                       if((prv_row_index == match_row_index) && (prv_col_index == match_col_index))
-                       {
-                           setChessTable(0,prv_row_index,prv_col_index); //cur_chess_table[prv_row_index][prv_col_index] = 0;
-                           //showTableValue(-1);
-                           return true;
-                       }
-                   }
-
-                   else
-                   {
-                         logger.info("piece_value " + cur_chess_table[prv_row_index][prv_col_index]);
-                        //setChessTable(13,prv_row_index,prv_col_index);
-                        showTableValue(-1);
-                   }
                 }
+
+               else if(cur_chess_table[getRealRow(prv_row_index)][prv_col_index] == piece_value)
+               {
+                   //setChessTable(0,prv_row_index,prv_col_index);
+                   //showTableValue(-1);
+
+                   if((prv_row_index == match_row_index) && (prv_col_index == match_col_index))
+                   {
+                       setChessTable(0, getRealRow(prv_row_index),prv_col_index); //cur_chess_table[prv_row_index][prv_col_index] = 0;
+                       //showTableValue(-1);
+                       return true;
+                   }
+               }
+
+               else
+               {
+                    //System.out.println("piece_value " + cur_chess_table[prv_row_index][prv_col_index]);
+                   //setChessTable(13,prv_row_index,prv_col_index);
+                   //showTableValue(-1);
+
+               }
+
             }
         }catch (Exception e) {
             System.out.println("calculatePreviousMove error " + e.toString());
@@ -512,6 +520,14 @@ public class PgnParse {
             }
             System.out.println();
         }
+    }
+
+    public static void debug_piece(int row, int col)
+    {
+        int tmp = cur_chess_table[getRealRow(row)][col];
+        setChessTable(13,getRealRow(row),col);
+        showTableValue(-1);
+        setChessTable(tmp,getRealRow(row),col);
     }
 
     public static int getRealRow(int row)
