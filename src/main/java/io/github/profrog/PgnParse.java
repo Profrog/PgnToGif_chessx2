@@ -234,21 +234,23 @@ public class PgnParse {
                             pawn_state = false;
                         }
 
-                        if (cur_char == '+') //check state, visual event#1,example
+                        if (cur_char == '+')
                         {
-
+                            //print("check state");
                         }
-                        else if (cur_char == '#') //check mate state, visual event#2
+                        else if (cur_char == '#')
                         {
-
+                            //print("check mate state");
                         }
-                        else if (cur_char == 'x') // remove piece state
+                        else if (cur_char == 'x')
                         {
+                            //print("remove piece state");
                             xcountrol = true;
                         }
 
-                        else if(cur_char == '=' && (!pawn_state)) //promotion control
+                        else if(cur_char == '=' && (!pawn_state))
                         {
+                            //print("promotion control state");
                             col_index = piece_data.get("" + move0.charAt(0));
                             row_index = piece_data.get("" + move0.charAt(1)); //charat(2) is '=', example h8=Q
                             piece_value = piece_data.get("" + move0.charAt(3))+ 6 * weight0;
@@ -456,15 +458,30 @@ public class PgnParse {
                 //System.out.println(String.valueOf(piece_value) + " " +String.valueOf(bargain_row) + " " + String.valueOf(bargain_col));
                 System.out.println(String.valueOf(piece_value) + " " +String.valueOf(prv_row_index) + " " + String.valueOf(prv_col_index));
                 System.out.println(String.valueOf(piece_value) + " " +String.valueOf(match_row_index) + " " + String.valueOf(match_col_index));
-                debug_piece(prv_row_index,prv_col_index);
+
+
+                if(piece_value == 3 || piece_value == 9) {
+                    //debug_piece(prv_row_index, prv_col_index);
+                }
 
 
                 //setChessTable(piece_value,prv_row_index,prv_col_index);
                 //showTableValue(-1);
 
-                if (cur_chess_table[getRealRow(prv_row_index)][prv_col_index] == 0)
+                if(prv_row_index < 0 || prv_row_index >= board_size)
                 {
+                    //print("prv_row size is starange " + String.valueOf(prv_row_index));
+                }
 
+                else if(prv_col_index < 0 || prv_col_index >= board_size)
+                {
+                    //print("prv_col size is starange " + String.valueOf(prv_col_index));
+                }
+
+
+                else if (cur_chess_table[getRealRow(prv_row_index)][prv_col_index] == 0)
+                {
+                    //print("there are no piece ");
                 }
 
                else if(cur_chess_table[getRealRow(prv_row_index)][prv_col_index] == piece_value)
@@ -490,7 +507,7 @@ public class PgnParse {
 
             }
         }catch (Exception e) {
-            System.out.println("calculatePreviousMove error " + e.toString());
+            print("calculatePreviousMove error " + e.toString());
         }
 
         return false;
@@ -538,5 +555,10 @@ public class PgnParse {
     public static void setChessTable(int piece_value, int row, int col)
     {
         cur_chess_table[row][col] = piece_value;
+    }
+
+    public static void print(String data)
+    {
+        System.out.println(data);
     }
 }
