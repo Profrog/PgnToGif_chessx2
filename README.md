@@ -68,8 +68,9 @@ User service simple example
     
     
         public static void main(String[] args){
-    
-            PgnParse.onlyParser(pgn_example,0,1);
+
+            //pgn_example is sample of chees.com's pgn, pgn_example2 is sample of lichess's pgndata
+            PgnParse.parserInit(pgn_example,0,1);
         }
     
     }
