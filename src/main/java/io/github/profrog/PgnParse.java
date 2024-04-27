@@ -227,24 +227,30 @@ public class PgnParse {
                     char x_char = '@';
                     boolean pawn_state = true;
 
-                    while (piece_index < move0.length()-2) { //control current string of chess piece
+                    int end_index = 2;
+                    char last_char = move0.charAt((move0.length()-1));
+
+                    if (last_char == '+')
+                    {
+                        //print("check state");
+                        ++end_index;
+                    }
+                    else if (last_char == '#')
+                    {
+                        //print("check mate state");
+                        ++end_index;
+                    }
+
+                    while (piece_index < move0.length()-end_index) { //control current string of chess piece
 
                         if (Character.isUpperCase(cur_char)) { //definition what piece
                             piece_value = piece_data.get("" + cur_char) + 6 * weight0;
                             pawn_state = false;
                         }
 
-                        if (cur_char == '+')
-                        {
-                            //print("check state");
-                        }
-                        else if (cur_char == '#')
-                        {
-                            //print("check mate state");
-                        }
                         else if (cur_char == 'x')
                         {
-                            //print("remove piece state");
+                            print("remove piece state");
                             xcountrol = true;
                         }
 
@@ -260,16 +266,13 @@ public class PgnParse {
                         }
 
                         else{
+                            print("set position for remove piece state");
                             x_char = cur_char;
                         }
 
-                        ++piece_index;
+                        cur_char = move0.charAt(++piece_index);
                     }
 
-                    if(!xcountrol)
-                    {
-                        x_char = '@';
-                    }
 
                     //control piece's next position
                     cur_char = move0.charAt(piece_index); //get col_data from pgn
@@ -365,7 +368,7 @@ public class PgnParse {
                     else if(piece_value == 5 || piece_value == 11) //queen case control
                     {
                         int[][] tmp_array = new int[56][2];
-                        int[][] multiple = {{1,0},{-1,0},{0,1},{0,-1},{1,0},{-1,0},{0,1},{0,-1}};
+                        int[][] multiple = {{1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
                         for(int cnt = 1; cnt < board_size; ++cnt)
                         {
                             for(int cnt2 = 0; cnt2 < multiple.length; ++cnt2)
@@ -383,7 +386,7 @@ public class PgnParse {
                     else if(piece_value == 6 || piece_value == 12) //king case control
                     {
                         int[][] tmp_array = new int[8][2];
-                        int[][] multiple = {{1,0},{-1,0},{0,1},{0,-1},{1,0},{-1,0},{0,1},{0,-1}};
+                        int[][] multiple = {{1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
                         for(int cnt = 1; cnt < 2; ++cnt)
                         {
                             for(int cnt2 = 0; cnt2 < multiple.length; ++cnt2)
@@ -460,7 +463,7 @@ public class PgnParse {
                 System.out.println(String.valueOf(piece_value) + " " +String.valueOf(match_row_index) + " " + String.valueOf(match_col_index));
 
 
-                if(piece_value == 3 || piece_value == 9) {
+                if(piece_value == 11 || piece_value == 11) {
                     //debug_piece(prv_row_index, prv_col_index);
                 }
 
