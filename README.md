@@ -20,4 +20,4 @@ Gradle
 
 
 User service example    
-        implementation group: 'io.github.profrog', name: 'chessx2', version: '2.0.0'
+     implementation group: 'io.github.profrog', name: 'chessx2', version: '2.0.0'
