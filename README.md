@@ -10,3 +10,14 @@ stable version :
 ## Introduction
 hello everyone, CHESSX2_PGNPARSER is java library for programming service for controlling PGN data
 (if you want to know about PGN format detailiy, please check https://www.chess.com/terms/chess-pgn)
+
+
+## Setting
+you can check CHESSX2_PARSER'S metadata in https://central.sonatype.com/artifact/io.github.profrog/chessx2  
+Gradle  
+
+    implementation group: 'io.github.profrog', name: 'chessx2', version: '2.0.0'
+
+
+User service example
+        implementation group: 'io.github.profrog', name: 'chessx2', version: '2.0.0'
