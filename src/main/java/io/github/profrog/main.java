@@ -1,9 +1,6 @@
 package io.github.profrog;
-
 import io.github.profrog.PgnParse;
 
-import java.awt.*;
-import java.util.HashMap;
 
 public class main {
 
@@ -53,40 +50,7 @@ public class main {
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
         // to see how IntelliJ IDEA suggests fixing it.
         //PgnParse.showTableValue(0);
-        PgnParse.onlyParser(pgn_example,0,1);
+        PgnParse.parserInit(pgn_example,0,1);
     }
-
-    /*
-    public static void parserInit(Image[] chess_img0, Color boardline_lout0, String pgn_data0, int wanttosee_table)
-    {
-        cur_chess_table = new int[8][8];
-        chess_img = new Image[chess_img0.length];
-        pgn_state = new HashMap<String,String>();
-
-        for(int idx = 0; idx < chess_img0.length; ++idx)
-        {
-            chess_img[idx] = chess_img0[idx];
-        }
-
-        boardline_lout = boardline_lout0;
-        pgn_data = pgn_data0;
-
-        //chess_image[0] = board_image.png..jpg..bmp..
-        //chess_image[1] = white_pawn_image.png..jpg..bmp..
-        //chess_image[2] = white_knight_image.png..jpg..bmp..
-        //chess_image[3] = white_bishop_image.png..jpg..bmp..
-        //chess_image[4] = white_rook_image.png..jpg..bmp..
-        //chess_image[5] = white_queen_image.png..jpg..bmp..
-        //chess_image[6] = white_king_image.png..jpg..bmp..
-
-        //chess_image[7] = black_pawn_image.png..jpg..bmp..
-        //chess_image[8] = black_knight_image.png..jpg..bmp..
-        //chess_image[9] = black_bishop_image.png..jpg..bmp..
-        //chess_image[10] = black_rook_image.png..jpg..bmp..
-        //chess_image[11] = black_queen_image.png..jpg..bmp..
-        //chess_image[12] = black_king_image.png..jpg..bmp..
-    }
-
-    */
 
 }
