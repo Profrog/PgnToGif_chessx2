@@ -18,6 +18,11 @@ Gradle
 
     implementation group: 'io.github.profrog', name: 'chessx2', version: '2.0.0'
 
+OR, you can mirror file following mirror branch
+    
+    git clone git@github.com:Profrog/chessx2_pgnparser.git -b mirror
+
+
 User service simple example    
    
     package org.example;
