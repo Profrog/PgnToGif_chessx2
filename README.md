@@ -79,3 +79,14 @@ User service simple example
         }
     
     }
+
+## Detailed Feature
+
+    read &parse pgn file as string(format of site {chess.com, lichess.org} -> parserInit
+    check and all piece position follows board table int[8][8] -> cur_chess_table
+    memory all change of board list<int[8][8]> -> check_table_mem
+    reflect new piece movement in current board table-> nxtMoveAlgorithm
+    reflect past piece movement in current board table-> prvMoveAlgorithm
+    show current board table -> showTableValue
+    debug piece movement -> debug_piece
+
