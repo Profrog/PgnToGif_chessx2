@@ -82,6 +82,7 @@ User service simple example
 
 ## Detailed Feature
 
+    Feature -> Method
     read &parse pgn file as string(format of site {chess.com, lichess.org} -> parserInit
     check and all piece position follows board table int[8][8] -> cur_chess_table
     memory all change of board list<int[8][8]> -> check_table_mem
