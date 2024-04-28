@@ -46,11 +46,21 @@ public class main {
             "11. Kc4 Nxd1 12. Rb1 b5+ 13. Kd5 Bb7+ 14. Kc5 d6# { Black wins by checkmate. } 0-1\n";
 
 
+    public static String pgn_example3 = "[Event \"?\"]\n" +
+            "[Site \"?\"]\n" +
+            "[Date \"????.??.??\"]\n" +
+            "[Round \"?\"]\n" +
+            "[White \"?\"]\n" +
+            "[Black \"?\"]\n" +
+            "[Result \"1-0\"]\n" +
+            "\n" +
+            "1. g4 e5 2. g5 h5 3. gxh6 f6 4. hxg7 Be7 5. gxh8=Q Bb4 6. Qxg8+ Bf8 7. Qg6+ Ke7 " +
+            "8. b3 d5 9. Ba3+ Ke6 10. Bh3# 1-0";
     public static void main(String[] args){
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
         // to see how IntelliJ IDEA suggests fixing it.
         //PgnParse.showTableValue(0);
-        PgnParse.parserInit(pgn_example,0,1);
+        PgnParse.parserInit(pgn_example3,0,1);
     }
 
 }
