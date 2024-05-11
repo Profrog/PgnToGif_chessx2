@@ -7,35 +7,94 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * it is module for pgn string data from chess.com/lichess.org convert to array table for java language
+ */
 public class PgnParse {
+    //public static Logger logger = Logger.getLogger(PgnParse.class.getName());
 
-    public static Logger logger = Logger.getLogger(PgnParse.class.getName());
-
+    /**
+     *  array table contain current piece position
+     */
     public static int[][] cur_chess_table;
+
+
+    /**
+     *  it is array stack for cur_chess_table
+     */
     public static  List<int[][]> check_table_mem;
 
-
+    /**
+     * it is map for matching chess's meaning with pgn's meaning
+     */
     public static Map<String,String> pgn_state;
 
+    /**
+     * it is map for matching gif_cheesx2 table data with pgn's meaning
+     */
     public static Map<String,Integer> piece_data;
 
+
+    /**
+     * it is pgn data stack for white piece movement
+     */
     public static List<String> white_move;
+
+
+    /**
+     * it is pgn data stack for black piece movement
+     */
     public static  List<String> black_move;
 
+
+    /**
+     * all pawn can move 2 block in first move, it is check that possibility
+     */
     public static  StringBuilder[] pawn_first_move = new StringBuilder[2];
 
-    public static final int board_size = 8; //in normally, chess board size is 8x8
-    public static int left_p = 0; //left column basis index
-    public static int right_p = board_size-1; //right column basis index
-    public static int top_p = 0; //top row basis index
-    public static int bottom_p = board_size -1; //bottom row basis index
+    /**
+     * chess board size, in normally, chess board size is 8x8
+     */
+    public static final int board_size = 8;
 
+    /**
+     * it mean that is black pieces are placed in bottom of board?
+     */
+    public static int black_bottom_option = 0;
 
+    /**
+     * it contains char for showing chess board
+     */
     public static String chess_piece_line = "_♟♞♝♜♛♚♙♘♗♖♕♔*";
 
+    /**
+     * left position of board
+     */
+    public static int left_p = 0; //left column basis index
 
-    //example1 : PgnParse.parserInit(pgn_example,0,0); white piece is down position, black piece is up position, debugging mode off
-    //example2 : PgnParse.parserInit(pgn_example,1,1); black piece is down position, white piece is up position, debugging mode on
+    /**
+     * right position of board
+     */
+    public static int right_p = board_size-1; //right column basis index
+
+    /**
+     * top position of board
+     */
+    public static int top_p = 0; //top row basis index
+
+    /**
+     * bottom position of board
+     */
+    public static int bottom_p = board_size -1; //bottom row basis index
+
+    /**
+     * it is init method for controlling pgn data in gif_chessx2
+     * @param pgn_data0 - pgn data which you get from get chess.com or lichess.org
+     * @param black_bottom_opt - if that param is value 0 white piece locate in bottom in chess board, if that value is bigger than 0, black piece will locate in bottom side of chess board
+     * @param want_seeing_table_opt - that option has data bigger than 0, this method will show cur board state following process in visually
+     * example1 : PgnParse.parserInit(pgn_example,0,0); white piece is down position, black piece is up position, debugging mode off
+     * example2 : PgnParse.parserInit(pgn_example,1,1); black piece is down position, white piece is up position, debugging mode on
+     */
     public static void parserInit(String pgn_data0, int black_bottom_opt, int want_seeing_table_opt)
     {
         try {
@@ -48,11 +107,11 @@ public class PgnParse {
             piece_data = new HashMap<>();
             pawn_first_move[0] = new StringBuilder("00000000"); //controlling possibility 2 blocking moving in first pawn moving
             pawn_first_move[1] = new StringBuilder("00000000");
+            black_bottom_option = black_bottom_opt;
 
             cur_chess_table = getInitialBoard(); //current chesstable setting
             check_table_mem.add(cur_chess_table); //memory
             addMetadataToPiecedata();
-
 
             //print("showing init board state");
             if(want_seeing_table_opt > 0)
@@ -104,7 +163,7 @@ public class PgnParse {
                     move_file.append(raw_data1[raw_data1.length -1].charAt(idx));
                 }
 
-                if(raw_data1[raw_data1.length -1].charAt(idx) == '}') //lichess format change to gif_chessx2 format
+                if(raw_data1[raw_data1.length -1].charAt(idx) == '}') //controlling lichess format change to gif_chessx2 format
                 {
                     load_check = 1;
                     ++idx;
@@ -152,6 +211,13 @@ public class PgnParse {
     }
 
 
+    /**
+     * controlling piece position with newly moving following pgn data
+     * @param move0 - where piece will go
+     * @param isblack - it marks current piece is black(white piece has 1 ~ 6, black piece has 7 ~ 12)
+     * @param black_bottom_opt - if that param is value 0 white piece locate in bottom in chess board, if that value is bigger than 0, black piece will locate in bottom side of chess board
+     * @return current board state which interpret pgn logic
+     */
     public static int[][] nxtMoveAlgorithm(String move0, int isblack,int black_bottom_opt)
     {
         //print("init nxtMoveAlgorithm");
@@ -379,25 +445,20 @@ public class PgnParse {
             }
 
 
-        if(black_bottom_opt > 0)// if you wnat to get black bottom position board, use option black_bottom_opt
-        {
-            int [][] rotate_array = new int[board_size][board_size];
-            for(int row0 = top_p ; row0 <= bottom_p; ++row0)
-            {
-                for(int col0 = left_p ; col0 <= right_p; ++col0)
-                {
-                    rotate_array[row0][col0] = cur_chess_table[col0][row0];
-                }
-            }
+        return blackBottomControl(black_bottom_opt);
 
-            return  rotate_array;
-        }
-
-        else {
-            return cur_chess_table;
-        }
     }
 
+
+    /**
+     * following nxtMoveAlgorithm piece move other position, and then piece data previous position need to be deleted, this method controls it
+     * @param prv_pos_array - it is array data which contain possibility movement about target piece
+     * @param row_index - target piece's new row index following nxtMoveAlgorithm
+     * @param col_index - target piece's new col index following nxtMoveAlgorithm
+     * @param piece_value - gets piece value data from nxtMoveAlgorithm (for more detail follow addMetadataToPiecedata())
+     * @param x_char - option for control catching other enemy piece
+     * @return true/false -: is this method's successful?
+     */
     public  static  boolean prvMoveAlgorithm(int[][] prv_pos_array, int row_index, int col_index, int piece_value, char x_char)
     {
         try {
@@ -429,7 +490,6 @@ public class PgnParse {
 
                 //print(String.valueOf(piece_value) + " " +String.valueOf(prv_row_index) + " " + String.valueOf(prv_col_index));
                 //print(String.valueOf(piece_value) + " " +String.valueOf(match_row_index) + " " + String.valueOf(match_col_index));
-
                 if(prv_row_index < 0 || prv_row_index >= board_size)
                 {
                     //print("prv_row size is starange " + String.valueOf(prv_row_index));
@@ -439,7 +499,6 @@ public class PgnParse {
                 {
                     //print("prv_col size is starange " + String.valueOf(prv_col_index));
                 }
-
 
                 else if (cur_chess_table[getRealRow(prv_row_index)][prv_col_index] == 0)
                 {
@@ -454,10 +513,12 @@ public class PgnParse {
                        if(x_control && (piece_value == 1 || piece_value == 7)) //enpassant control
                        {
                            //print("x_control");
-                           setChessTable(0, getRealRow(row_index - black_opt),col_index);
+                           if(piece_value != cur_chess_table[getRealRow(row_index - black_opt)][col_index]) {
+                               setChessTable(0, getRealRow(row_index - black_opt), col_index);
+                           }
                        }
 
-                       setChessTable(0, getRealRow(prv_row_index),prv_col_index); //cur_chess_table[prv_row_index][prv_col_index] = 0;
+                       setChessTable(0, getRealRow(prv_row_index), prv_col_index); //cur_chess_table[prv_row_index][prv_col_index] = 0;
                        return true;
                    }
                }
@@ -475,10 +536,13 @@ public class PgnParse {
         return false;
     }
 
-
+    /**
+     * show nth chess board table basis on pgn data
+     * @param where0 - (where0 -: n) th
+     */
     public static void showTableValue(int where0)
     {
-        if (where0 >= 0) {
+        if (where0 > 0) {
             for (int row0 = top_p; row0 <= bottom_p; ++row0) {
                 for (int col0 = left_p; col0 <= right_p; ++col0) {
                     System.out.print(chess_piece_line.charAt(check_table_mem.get(where0)[row0][col0]));
@@ -489,10 +553,11 @@ public class PgnParse {
         }
 
         else {
+            int[][] present_table = blackBottomControl(black_bottom_option);
             for (int row0 = top_p; row0 <= bottom_p; ++row0) {
                 for (int col0 = left_p; col0 <= right_p; ++col0) {
                     //System.out.print(String.format("%d ",check_table_mem.get(where0)[row0][col0]));
-                    System.out.print(chess_piece_line.charAt(cur_chess_table[row0][col0]));
+                    System.out.print(chess_piece_line.charAt(present_table[row0][col0]));
                 }
                 print("");
             }
@@ -500,6 +565,12 @@ public class PgnParse {
         }
     }
 
+
+    /**
+     * it is method for debugging detail coordinate following input {row, col}
+     * @param row - row index which want to debug position
+     * @param col - column index which want to debug position
+     */
     public static void debug_piece(int row, int col) //show * piece where i want
     {
         int tmp = cur_chess_table[getRealRow(row)][col];
@@ -508,17 +579,33 @@ public class PgnParse {
         setChessTable(tmp,getRealRow(row),col);
     }
 
+    /**
+     * in array system top index is 0, bottom index is n(it is root structure), but in natural view for human, it is more easily top index is n and bottom index is 0, that method solve that problem
+     * @param row - row index for changing from natural view to real view for computer
+     * @return
+     */
     public static int getRealRow(int row)
     {
         return board_size -1 - row;
     }
 
+
+    /**
+     * setting piece data to board
+     * @param piece_value - gets piece value data from nxtMoveAlgorithm (for more detail follow addMetadataToPiecedata())
+     * @param row - row index of piece which want to change piece value
+     * @param col - column index of piece which want to change piece value
+     */
     public static void setChessTable(int piece_value, int row, int col)
     {
         cur_chess_table[row][col] = piece_value;
     }
 
 
+    /**
+     * initailing chessboard's original state
+     * @return chess board's initial table
+     */
     public static int[][] getInitialBoard()
     {
         //print("getInitialBoard init");
@@ -534,6 +621,9 @@ public class PgnParse {
         };
     }
 
+    /**
+     * matching protocol about chess's meaning with pgn meaning
+     */
     public static void addMetadataToPiecedata()
     {
         //print("piece meta data is added");
@@ -554,15 +644,43 @@ public class PgnParse {
         piece_data.put("1",0); //board row 1
 
         piece_data.put("h",7); //board col 8
-        piece_data.put("g",6); //board col 8
-        piece_data.put("f",5); //board col 8
-        piece_data.put("e",4); //board col 8
-        piece_data.put("d",3); //board col 8
-        piece_data.put("c",2); //board col 8
-        piece_data.put("b",1); //board col 8
-        piece_data.put("a",0); //board col 8
+        piece_data.put("g",6); //board col 7
+        piece_data.put("f",5); //board col 6
+        piece_data.put("e",4); //board col 5
+        piece_data.put("d",3); //board col 4
+        piece_data.put("c",2); //board col 3
+        piece_data.put("b",1); //board col 2
+        piece_data.put("a",0); //board col 1
     }
 
+    /**
+     * it rotate chess board table, when user want to black pieces go to bottom in board(in default white pieces are placed in bottom)
+     * @param black_bottom_opt - if that param is value 0 white piece locate in bottom in chess board, if that value is bigger than 0, black piece will locate in bottom side of chess board
+     * @return
+     */
+    public static int[][] blackBottomControl(int black_bottom_opt)
+    {
+        if(black_bottom_opt > 0)// if you want to get black bottom position board, use option black_bottom_opt
+        {
+            int [][] rotate_array = new int[board_size][board_size];
+            for(int row0 = 0 ; row0 < board_size; ++row0)
+            {
+                for(int col0 = 0 ; col0 < board_size; ++col0)
+                {
+                    rotate_array[board_size - 1 - col0][board_size - 1 - row0] = cur_chess_table[col0][row0];
+                }
+            }
+
+            return rotate_array;
+        }
+
+        else return cur_chess_table;
+    }
+
+    /**
+     * it is method for using System.out.println more easily
+     * @param data - string data for System.out.println
+     */
     public static void print(String data)
     {
         System.out.println(data);

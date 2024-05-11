@@ -2,6 +2,9 @@ package io.github.profrog;
 import io.github.profrog.PgnParse;
 
 
+/**
+ * example for using PgnParse
+ */
 public class main {
 
     public static String pgn_example = "\n" +
@@ -46,21 +49,26 @@ public class main {
             "11. Kc4 Nxd1 12. Rb1 b5+ 13. Kd5 Bb7+ 14. Kc5 d6# { Black wins by checkmate. } 0-1\n";
 
 
-    public static String pgn_example3 = "[Event \"?\"]\n" +
-            "[Site \"?\"]\n" +
-            "[Date \"????.??.??\"]\n" +
+    public static String pgn_example3 = "[Event \"Live Chess\"]\n" +
+            "[Site \"Chess.com\"]\n" +
+            "[Date \"2024.04.16\"]\n" +
             "[Round \"?\"]\n" +
-            "[White \"?\"]\n" +
-            "[Black \"?\"]\n" +
-            "[Result \"1-0\"]\n" +
+            "[White \"WINEDOKENT\"]\n" +
+            "[Black \"PFchessX2\"]\n" +
+            "[Result \"0-1\"]\n" +
+            "[ECO \"C45\"]\n" +
+            "[WhiteElo \"1394\"]\n" +
+            "[BlackElo \"1499\"]\n" +
+            "[TimeControl \"180+2\"]\n" +
+            "[EndTime \"7:30:38 PDT\"]\n" +
+            "[Termination \"PFchessX2 won by checkmate\"]\n" +
             "\n" +
-            "1. g4 e5 2. g5 h5 3. gxh6 f6 4. hxg7 Be7 5. gxh8=Q Bb4 6. Qxg8+ Bf8 7. Qg6+ Ke7 " +
-            "8. b3 d5 9. Ba3+ Ke6 10. Bh3# 1-0";
+            "1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Qf6 5. Nxc6 dxc6 6. Nc3 Be6 7. Bd3 Bb4 8." +
+            "Bd2 O-O-O 9. O-O Nh6 10. h3 Bxc3 11. Bxc3 Qg6 12. Qf3 f5 13. exf5 Bxf5 14. Bxf5+ " +
+            "Nxf5 15. Be5 Nh4 16. Qf4 Qxg2# 0-1";
     public static void main(String[] args){
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
         //PgnParse.showTableValue(0);
-        PgnParse.parserInit(pgn_example3,0,1);
+        PgnParse.parserInit(pgn_example3,1,1);
     }
 
 }
