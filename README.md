@@ -16,8 +16,7 @@ hello everyone, CHESSX2_PGNPARSER is java library for programming service for co
 maven server : https://central.sonatype.com/artifact/io.github.profrog/chessx2/overview  
 
 
-## Setting
-you can check CHESSX2_PARSER'S metadata in https://central.sonatype.com/artifact/io.github.profrog/chessx2  
+## Setting  
 Gradle  
 
     implementation group: 'io.github.profrog', name: 'chessx2', version: '2.0.0'
