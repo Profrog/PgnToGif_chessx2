@@ -93,7 +93,7 @@ for more detail information check that link
 https://www.javadoc.io/doc/io.github.profrog/chessx2/latest/io/github/profrog/package-summary.html
 
 
-## USER QUIDE(KOREAN)  
+## USER GUIDE(KOREAN)  
 refer to 
 https://blog.naver.com/ache159/223444101933
 
