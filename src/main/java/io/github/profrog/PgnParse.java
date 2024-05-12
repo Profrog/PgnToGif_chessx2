@@ -65,7 +65,7 @@ public class PgnParse {
     /**
      * it contains char for showing chess board
      */
-    public static String chess_piece_line = "_♟♞♝♜♛♚♙♘♗♖♕♔*";
+    public static String chess_piece_line = "_♙♘♗♖♕♔♟♞♝♜♛♚*";
 
     /**
      * left position of board
@@ -675,6 +675,16 @@ public class PgnParse {
         }
 
         else return cur_chess_table;
+    }
+
+
+    /**
+     * change piece skin for customizing
+     * @param skin - skin data
+     */
+    public static void setChessSkin(String skin)
+    {
+        chess_piece_line = skin;
     }
 
     /**
