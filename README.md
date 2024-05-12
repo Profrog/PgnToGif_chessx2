@@ -13,9 +13,10 @@ stable version :  2.0.0
 hello everyone, CHESSX2_PGNPARSER is java library for programming service for controlling PGN data
 (if you want to know about PGN format detailiy, please check https://www.chess.com/terms/chess-pgn)
 
+maven server : https://central.sonatype.com/artifact/io.github.profrog/chessx2/overview  
 
-## Setting
-you can check CHESSX2_PARSER'S metadata in https://central.sonatype.com/artifact/io.github.profrog/chessx2  
+
+## Setting  
 Gradle  
 
     implementation group: 'io.github.profrog', name: 'chessx2', version: '2.0.0'
@@ -84,19 +85,12 @@ User service simple example
 
 ## Detailed Feature
 
-    Feature -> Method
-    
-    read &parse pgn file as string(format of site {chess.com, lichess.org} -> parserInit
-    
-    check and all piece position follows board table int[8][8] -> cur_chess_table
-    
-    memory all change of board list<int[8][8]> -> check_table_mem
-    
-    reflect new piece movement in current board table-> nxtMoveAlgorithm
-    
-    reflect past piece movement in current board table-> prvMoveAlgorithm
-    
-    show current board table -> showTableValue
-    
-    debug piece movement -> debug_piece
+![Screenshot from 2024-05-12 02-34-24](https://github.com/Profrog/chessx2_pgnparser/assets/26535065/22a8d4cc-79bf-4fbb-bf0e-68187d495a5a)
 
+
+
+for more detail information check that link
+https://www.javadoc.io/doc/io.github.profrog/chessx2/latest/io/github/profrog/package-summary.html
+
+
+  
