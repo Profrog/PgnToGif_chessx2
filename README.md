@@ -97,6 +97,7 @@ https://www.javadoc.io/doc/io.github.profrog/chessx2/latest/io/github/profrog/pa
 refer to 
 https://blog.naver.com/ache159/223444101933
 
+video : https://www.youtube.com/watch?v=tjTLnJ-7wKw  
 
 
   
