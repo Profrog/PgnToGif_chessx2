@@ -7,68 +7,30 @@ import io.github.profrog.PgnParse;
  */
 public class main {
 
-    public static String pgn_example = "\n" +
-            "[Event \"Live Chess\"]\n" +
+    public  static  String pgn_example = "[Event \"Live Chess\"]\n" +
             "[Site \"Chess.com\"]\n" +
-            "[Date \"2024.03.23\"]\n" +
+            "[Date \"2024.05.09\"]\n" +
             "[Round \"?\"]\n" +
-            "[White \"MagicRoss\"]\n" +
+            "[White \"Fluffy7Bunny\"]\n" +
             "[Black \"PFchessX2\"]\n" +
-            "[Result \"0-1\"]\n" +
-            "[ECO \"D02\"]\n" +
-            "[WhiteElo \"1139\"]\n" +
-            "[BlackElo \"1150\"]\n" +
-            "[TimeControl \"120+1\"]\n" +
-            "[EndTime \"19:04:44 PDT\"]\n" +
-            "[Termination \"PFchessX2 won by checkmate\"]\n" +
+            "[Result \"1-0\"]\n" +
+            "[ECO \"D06\"]\n" +
+            "[WhiteElo \"1489\"]\n" +
+            "[BlackElo \"1418\"]\n" +
+            "[TimeControl \"300+5\"]\n" +
+            "[EndTime \"5:51:21 PDT\"]\n" +
+            "[Termination \"Fluffy7Bunny won by resignation\"]\n" +
             "\n" +
-            "1. d4 d5 2. Nf3 Nc6 3. e3 Bf5 4. Bb5 a6 5. O-O e6 6. Bxc6+ bxc6 7. c3 Bd6 8. Re1 " +
-            "Nf6 9. h3 h6 10. Nh4 Bh7 11. g4 Ne4 12. Nd2 Qxh4 13. Nxe4 Bxe4 14. f3 Qg3+ 15. " +
-            "Kf1 Bxf3 16. Qd2 Qxh3+ 17. Kg1 Qh1+ 18. Kf2 Qg2# 0-1\n";
+            "1. d4 d5 2. c4 Nf6 3. cxd5 Nxd5 4. e4 Nb6 5. Nf3 Bg4 6. Be2 e6 7. O-O Be7 8. Nc3\n" +
+            "O-O 9. Bf4 Nc6 10. Be3 Bxf3 11. Bxf3 Nc4 12. b3 Nxe3 13. fxe3 Bb4 14. Rc1 Qg5\n" +
+            "15. Qe2 Rfd8 16. Nb5 Rac8 17. e5 a6 18. Bxc6 bxc6 19. Na7 Ra8 20. Nxc6 Ba3 21.\n" +
+            "Nxd8 Bxc1 22. Rxc1 Rxd8 23. Rxc7 h6 24. Qf3 Rd5 25. Rxf7 Qg6 26. Rf8+ Kh7 27.\n" +
+            "Qf1 Qe4 28. Rf3 Rd7 29. Qxa6 Rc7 30. Qxe6 Rc1+ 31. Kf2 Qh4+ 32. Rg3 Rc2+ 33. Kf3\n" +
+            "Qh5+ 34. Qg4 Qf7+ 35. Ke4 Qb7+ 36. Kd3 Rxa2 37. Qe4+ 1-0";
 
-    public static String pgn_example2 = "\n" +
-            "[Event \"Casual 긴 대국 game\"]\n" +
-            "[Site \"https://lichess.org/3FLP6aWA\"]\n" +
-            "[Date \"2024.04.02\"]\n" +
-            "[White \"lichess AI level 1\"]\n" +
-            "[Black \"profrog\"]\n" +
-            "[Result \"0-1\"]\n" +
-            "[UTCDate \"2024.04.02\"]\n" +
-            "[UTCTime \"14:59:54\"]\n" +
-            "[WhiteElo \"?\"]\n" +
-            "[BlackElo \"1500\"]\n" +
-            "[Variant \"Standard\"]\n" +
-            "[TimeControl \"-\"]\n" +
-            "[ECO \"C44\"]\n" +
-            "[Opening \"Ponziani Opening\"]\n" +
-            "[Termination \"Normal\"]\n" +
-            "[Annotator \"lichess.org\"]\n" +
-            "\n" +
-            "1. e4 e5 2. Nf3 Nc6 3. c3 { C44 Ponziani Opening } Qf6 " +
-            "4. d4 exd4 5. cxd4 Bb4+ 6. Ke2 Nh6 7. Nc3 Ng4 8. a3 Nxd4+ 9. Kd2 Bxc3+ 10. Kd3 Nxf2+ " +
-            "11. Kc4 Nxd1 12. Rb1 b5+ 13. Kd5 Bb7+ 14. Kc5 d6# { Black wins by checkmate. } 0-1\n";
-
-
-    public static String pgn_example3 = "[Event \"Live Chess\"]\n" +
-            "[Site \"Chess.com\"]\n" +
-            "[Date \"2024.04.16\"]\n" +
-            "[Round \"?\"]\n" +
-            "[White \"WINEDOKENT\"]\n" +
-            "[Black \"PFchessX2\"]\n" +
-            "[Result \"0-1\"]\n" +
-            "[ECO \"C45\"]\n" +
-            "[WhiteElo \"1394\"]\n" +
-            "[BlackElo \"1499\"]\n" +
-            "[TimeControl \"180+2\"]\n" +
-            "[EndTime \"7:30:38 PDT\"]\n" +
-            "[Termination \"PFchessX2 won by checkmate\"]\n" +
-            "\n" +
-            "1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Qf6 5. Nxc6 dxc6 6. Nc3 Be6 7. Bd3 Bb4 8." +
-            "Bd2 O-O-O 9. O-O Nh6 10. h3 Bxc3 11. Bxc3 Qg6 12. Qf3 f5 13. exf5 Bxf5 14. Bxf5+ " +
-            "Nxf5 15. Be5 Nh4 16. Qf4 Qxg2# 0-1";
     public static void main(String[] args){
         //PgnParse.showTableValue(0);
-        PgnParse.parserInit(pgn_example3,1,1);
+        PgnParse.parserInit(pgn_example,1,1);
     }
 
 }

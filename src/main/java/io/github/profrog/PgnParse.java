@@ -100,6 +100,7 @@ public class PgnParse {
         try {
 
             //print("data init");
+            pgn_data0 = pgn_data0.replace('\n', ' ');
             check_table_mem = new ArrayList<>();
             pgn_state = new HashMap<String, String>();
             white_move = new ArrayList<>(); //list of white piece moving data
@@ -221,6 +222,7 @@ public class PgnParse {
     public static int[][] nxtMoveAlgorithm(String move0, int isblack,int black_bottom_opt)
     {
         //print("init nxtMoveAlgorithm");
+        print(move0);
         int piece_index = 0;
         int piece_value = 1 + isblack*6; //default piece is pawn, 
         int row_index = -1; //row position piece will go
@@ -395,7 +397,7 @@ public class PgnParse {
                     {
                         //print("rook case control");
                         int[][] prv_pos_array = new int[28][2];
-                        int[][] multiple = {{1,0},{-1,0}};
+                        int[][] multiple = {{1,0},{-1,0},{0,1},{0,-1}};
                         for(int cnt = 1; cnt < board_size; ++cnt)
                         {
                             for(int cnt2 = 0; cnt2 < multiple.length; ++cnt2)
