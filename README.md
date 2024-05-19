@@ -7,7 +7,7 @@
 ![Screenshot from 2024-05-12 01-48-00](https://github.com/Profrog/chessx2_pgnparser/assets/26535065/28b44443-1518-4740-a53a-7e80e03fbe02)
 
 
-stable version :  '2.0.1'
+stable version :  '2.0.2'
 
 ## Introduction
 hello everyone, CHESSX2_PGNPARSER is java library for programming service for controlling PGN data
