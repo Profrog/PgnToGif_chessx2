@@ -23,7 +23,7 @@ Gradle
 
 OR, you can mirror file following mirror branch
     
-    git clone git@github.com:Profrog/chessx2_pgnparser.git -b mirror
+    git clone https://github.com/Profrog/chessx2_pgnparser.git -b mirror
 
 
 User service simple example    
