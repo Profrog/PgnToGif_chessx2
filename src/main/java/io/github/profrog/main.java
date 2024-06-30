@@ -1,6 +1,8 @@
 package io.github.profrog;
 import io.github.profrog.PgnParse;
 
+import java.awt.image.BufferedImage;
+
 
 /**
  * example for using PgnParse
@@ -30,7 +32,8 @@ public class main {
 
     public static void main(String[] args){
         //PgnParse.showTableValue(0);
-        PgnParse.parserInit(pgn_example,1,1);
+        //PgnParse.parserInit(pgn_example,1,1);
+        BufferedImage[] test_set = ImageToGif.makeImageSet("/home/mingyu/Pictures/Wallpapers");
+        ImageToGif.gifInit("/home/mingyu/Pictures/Wallpapers/test.gif", test_set,new int[]{2000,10});
     }
-
 }
