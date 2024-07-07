@@ -1,9 +1,14 @@
 package io.github.profrog;
+import com.sun.source.tree.NewArrayTree;
+
 import javax.imageio.ImageIO;
 import java.io.*;
 import java.awt.*;
 import java.awt.image.*;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 
 public class ImageToGif {
@@ -17,7 +22,7 @@ public class ImageToGif {
     public static BufferedImage image; // current frame
     public static int width; // image's width size
     public static int height; //image's height size
-    public static BufferedImage[] images;
+    public static List<BufferedImage> images;
     public static int repeat = -1; // no repeat
     public static int delay = 0; // frame delay (hundredths)
     public static int dispose = -1; // disposal code (-1 = use default)
@@ -40,14 +45,14 @@ public class ImageToGif {
 
     /**
      * it is init method for controlling gif data form BufferedImages in gif_chessx2
-     * @param file_dir - location for saving gif data added gif's name
-     * @param ims - buffer image set which make gif file
+     * @param output_dir - location for saving gif data added gif's name
+     * @param input_dir - buffer image set which make gif file
      * @param option - option[0] mean that delay about exchanging image by image, option[1] mean that repeat count
      * example1 : ImageToGif.gifInit("/home/mingyu/Pictures/Wallpapers/test.gif", test_set,new int[]{2000,10});
      */
-    public static boolean gifInit(String file_dir, BufferedImage[] ims, int[] option)
+    public static boolean gifInit(String output_dir, String input_dir, int[] option)
     {
-        Start(file_dir);
+        Start(output_dir);
 
         for(int idx = 0 ; idx < option.length; ++idx)
         {
@@ -62,7 +67,7 @@ public class ImageToGif {
             }
         }
 
-        images = ims;
+        makeImageSet(input_dir);
         for(BufferedImage image : images)
         {
             addFrame(image);
@@ -77,7 +82,7 @@ public class ImageToGif {
      * @param folder - location for saving images added gif's name
      * example1 : BufferedImage[] test_set = ImageToGif.makeImageSet("/home/mingyu/Pictures/Wallpapers");
      */
-    public static BufferedImage[] makeImageSet(String folder)
+    public static List<BufferedImage> makeImageSet(String folder)
     {
         File directory = new File(folder);
         File[] imageFiles = directory.listFiles((dir, name) -> {
@@ -85,15 +90,25 @@ public class ImageToGif {
             return nameLower.endsWith(".jpg") || nameLower.endsWith(".jpeg") || nameLower.endsWith(".png") || nameLower.endsWith(".bmp");
         });
 
-        images = new BufferedImage[imageFiles.length];
+        if (imageFiles != null && imageFiles.length > 0) {
+            // 파일 이름순으로 정렬
+            Arrays.sort(imageFiles, new Comparator<File>() {
+                @Override
+                public int compare(File file1, File file2) {
+                    return file1.getName().compareTo(file2.getName());
+                }
+            });
+        }
+
+        images = new ArrayList<>();
         for (int i = 0; i < imageFiles.length; i++) {
             try {
-                images[i] = ImageIO.read(imageFiles[i]);
+                images.add(ImageIO.read(imageFiles[i]));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        
+
         return images;
     }
 

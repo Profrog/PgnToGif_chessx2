@@ -95,7 +95,7 @@ public class PgnParse {
      * example1 : PgnParse.parserInit(pgn_example,0,0); white piece is down position, black piece is up position, debugging mode off
      * example2 : PgnParse.parserInit(pgn_example,1,1); black piece is down position, white piece is up position, debugging mode on
      */
-    public static void parserInit(String pgn_data0, int black_bottom_opt, int want_seeing_table_opt)
+    public static List<int[][]> parserInit(String pgn_data0, int black_bottom_opt, int want_seeing_table_opt)
     {
         try {
 
@@ -111,7 +111,7 @@ public class PgnParse {
             black_bottom_option = black_bottom_opt;
 
             cur_chess_table = getInitialBoard(); //current chesstable setting
-            check_table_mem.add(cur_chess_table); //memory
+            check_table_mem.add(blackBottomControl(black_bottom_opt)); //memory
             addMetadataToPiecedata();
 
             //print("showing init board state");
@@ -209,6 +209,8 @@ public class PgnParse {
         {
             print("parserInit error " + e.getMessage());
         }
+
+        return check_table_mem;
     }
 
 
@@ -662,9 +664,9 @@ public class PgnParse {
      */
     public static int[][] blackBottomControl(int black_bottom_opt)
     {
+        int [][] rotate_array = new int[board_size][board_size];
         if(black_bottom_opt > 0)// if you want to get black bottom position board, use option black_bottom_opt
         {
-            int [][] rotate_array = new int[board_size][board_size];
             for(int row0 = 0 ; row0 < board_size; ++row0)
             {
                 for(int col0 = 0 ; col0 < board_size; ++col0)
@@ -672,11 +674,20 @@ public class PgnParse {
                     rotate_array[board_size - 1 - col0][board_size - 1 - row0] = cur_chess_table[col0][row0];
                 }
             }
-
-            return rotate_array;
         }
 
-        else return cur_chess_table;
+        else
+        {
+            for(int row0 = 0 ; row0 < board_size; ++row0)
+            {
+                for(int col0 = 0 ; col0 < board_size; ++col0)
+                {
+                    rotate_array[col0][row0] = cur_chess_table[col0][row0];
+                }
+            }
+        }
+
+        return rotate_array;
     }
 
 
