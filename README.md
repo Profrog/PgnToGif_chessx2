@@ -4,7 +4,7 @@
 <a href="https://developer.android.com" target="_blank"><img src="https://img.shields.io/badge/apachemaven-C71A36?style=flat-square&logo=apachemaven&logoColor=white"/></a>
 <a href="https://developer.android.com" target="_blank"><img src="https://img.shields.io/badge/Gradle-02303A?style=flat-square&logo=Gradle&logoColor=white"/></a>
 
-![Screenshot from 2024-05-12 01-48-00](https://github.com/Profrog/chessx2_pgnparser/assets/26535065/28b44443-1518-4740-a53a-7e80e03fbe02)
+![test](https://github.com/user-attachments/assets/cfaab0ea-98a3-492c-8943-e5f55b9863ec)
 
 
 stable version :  '2.0.2'
