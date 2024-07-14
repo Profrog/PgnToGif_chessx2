@@ -39,8 +39,8 @@ public class PgnToImage {
     /**
      *  piece_width, piece_height,board_width,board_height is size of piece & board image
      */
-    public static int board_width = 800;
-    public static int board_height = 800;
+    public static int board_width = 400;
+    public static int board_height = 400;
     public static int piece_width;
     public static int piece_height;
 

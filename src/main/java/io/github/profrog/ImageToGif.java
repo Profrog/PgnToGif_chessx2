@@ -374,7 +374,7 @@ public class ImageToGif {
             disp = 2; // force clear if using transparent color
         }
         if (true) { //dispose >= 0
-            disp = 100 & 7; // user override, dispose & 7
+            disp = 1 & 7; // user override, dispose & 7
         }
         disp <<= 2;
 
