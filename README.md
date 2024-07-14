@@ -97,7 +97,7 @@ https://www.javadoc.io/doc/io.github.profrog/chessx2/latest/io/github/profrog/pa
 
 ## USER GUIDE(KOREAN)  
 refer to 
-https://blog.naver.com/ache159/223444101933
+https://blog.naver.com/ache159/223512620639
 video : https://www.youtube.com/watch?v=tjTLnJ-7wKw  
 
 
