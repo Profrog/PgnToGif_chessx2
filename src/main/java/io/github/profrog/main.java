@@ -34,13 +34,10 @@ public class main {
             "Qh5+ 34. Qg4 Qf7+ 35. Ke4 Qb7+ 36. Kd3 Rxa2 37. Qe4+ 1-0";
 
     public static void main(String[] args) throws IOException {
-        //PgnParse.showTableValue(0);
-         //PgnParse.parserInit(pgn_example,1,1);
-        //BufferedImage[] test_set = ImageToGif.makeImageSet("/home/mingyu/Pictures/Wallpapers");
         String dir0 = "/home/mingyu/Pictures/chess";
-        //ImageToGif.gifInit("/home/mingyu/Pictures/Wallpapers/test.gif", test_set,new int[]{2000,10});
         List<int[][]> alpa =  PgnParse.parserInit(pgn_example,0,0);
         String input_dir = PgnToImage.imageInit(alpa,dir0);
-        ImageToGif.gifInit(dir0 + "/test.gif", input_dir, new int[]{1000,1});
+
+        ImageToGif.gifInit(dir0 + "/test.gif", input_dir, 1000);
     }
 }

@@ -14,84 +14,133 @@ import java.util.List;
 public class ImageToGif {
 
     /**
-     * it is module for converting image dataset to gif
-     * I followed that document http://www.java2s.com/Code/Java/2D-Graphics-GUI/AnimatedGifEncoder.htm
+     * No copyright asserted on the source code of this class. May be used for any
+     * purpose, however, refer to the Unisys LZW patent for restrictions on use of
+     * the associated LZWEncoder class. Please forward any corrections to
+     * kweiner@fmsware.com.
+     *
+     * 2nd edit, Mingyu Kim(ache159@naver.com)
+     *
+     * @author Kevin Weiner, FM Software
+     * @version 1.03 November 2003
+     *
      */
 
-    public static OutputStream out; //gif file output
-    public static BufferedImage image; // current frame
-    public static int width; // image's width size
-    public static int height; //image's height size
-    public static List<BufferedImage> images;
-    public static int repeat = -1; // no repeat
-    public static int delay = 0; // frame delay (hundredths)
-    public static int dispose = -1; // disposal code (-1 = use default)
+    /**
+     *  output_gif if gif file for distribution
+     */
+    public static OutputStream output_gif;
+
+    /**
+     *  cur_image is current image as frame for gif output
+     */
+    public static BufferedImage cur_image; // current frame
+
+    /**
+     * img_width is current image's width and img_height is currents image height
+     */
+    public static int img_width; // image's width size
+    public static int img_height; //image's height size
 
 
-    //original parameter
-    public static boolean closeStream = false; // close stream when finished
-    public static int palSize = 7; // color table size (bits-1)
-    public static boolean sizeSet = false; // if false, get size from first frame
-    public static int sample = 10; // default sample interval for quantizer
-    public static byte[] pixels; // BGR byte array from frame
-    public static byte[] indexedPixels; // converted frame indexed to palette
-    public static int colorDepth; // number of bit planes
-    public static byte[] colorTab; // RGB palette
-    public static boolean[] usedEntry = new boolean[256]; // active palette entries
-    public static boolean started = false; // ready to output frames
-    public static Color transparent = null; // transparent color if given
-    public static int transIndex; // transparent index in color table
+    /**
+     * input_images is input data for making gif output
+     */
+    public static List<BufferedImage> input_images;
+
+
+    /**
+     * repeat is parameter of repetitions for images
+     * -1 mean that no repeat
+     */
+    public static int repeat = -1;
+
+    /**
+     * delay is parameter delay for images
+     * unit is milliseconds
+     */
+    public static int delay = 0;
+
+    /**
+     * setSize is parameter for checking frame size
+     * if false, get size from first frame
+     */
+    public static boolean sizeSet = false;
+
+    /**
+     * sample is parameter for quality of sampling
+     * default sample interval for quantizer
+     */
+    public static int sample = 10;
+
+    /**
+     * pixels are parameter for BGR data of frame
+     * BGR byte array from frame
+     */
+    public static byte[] pixels;
+
+    /**
+     * indexedPixels are parameter for pixel color data for BGR data of frame
+     * converted frame indexed to palette
+     */
+    public static byte[] indexedPixels;
+
+    /**
+     * colorTab are parameter for palette data for pixel color data
+     * RGB palette
+     */
+    public static byte[] colorTab;
+
+    /**
+     * userEntry are parameter for active color data set from colorTab
+     * active palette entries
+     */
+    public static boolean[] usedEntry = new boolean[256];
+
+    /**
+     * firstFrame is parameter for check event about first frame
+     */
     public static boolean firstFrame = true;
 
     /**
      * it is init method for controlling gif data form BufferedImages in gif_chessx2
      * @param output_dir - location for saving gif data added gif's name
      * @param input_dir - buffer image set which make gif file
-     * @param option - option[0] mean that delay about exchanging image by image, option[1] mean that repeat count
-     * example1 : ImageToGif.gifInit("/home/mingyu/Pictures/Wallpapers/test.gif", test_set,new int[]{2000,10});
+     * @param delay - millisecond of delay frame by frame
+     * example1 : ImageToGif.gifInit("/home/mingyu/Pictures/Wallpapers/test.gif", test_set, 1000);
      */
-    public static boolean gifInit(String output_dir, String input_dir, int[] option)
-    {
-        Start(output_dir);
+    public static boolean gifInit(String output_dir, String input_dir, int delay) throws IOException {
+        setDelay(delay);
+        output_gif = new BufferedOutputStream(new FileOutputStream(output_dir));
+        writeString("GIF89a");
+        connectLinkToImage(input_dir);
 
-        for(int idx = 0 ; idx < option.length; ++idx)
-        {
-            switch (idx)
-            {
-                case 0 :
-                    setDelay(option[idx]); // delay
-                    break;
-                case 1 :
-                    setRepeat(option[idx]);
-                    break;
-            }
-        }
-
-        makeImageSet(input_dir);
-        for(BufferedImage image : images)
+        int idx = 0;
+        for(BufferedImage image : input_images)
         {
             addFrame(image);
+
         }
         finish();
+        System.out.println("finished ImageToGif Process");
         return true;
     }
 
-
     /**
-     * it is making data
-     * @param folder - location for saving images added gif's name
-     * example1 : BufferedImage[] test_set = ImageToGif.makeImageSet("/home/mingyu/Pictures/Wallpapers");
+     * it is method for getting input image about board and piece
+     * @param original_dir - directory for original images
+     * example1 : connectLinkToImage("/home/mingyu/Pictures/chess/output");
      */
-    public static List<BufferedImage> makeImageSet(String folder)
+    public static List<BufferedImage> connectLinkToImage(String original_dir)
     {
-        File directory = new File(folder);
+        File directory = new File(original_dir);
         File[] imageFiles = directory.listFiles((dir, name) -> {
             String nameLower = name.toLowerCase();
             return nameLower.endsWith(".jpg") || nameLower.endsWith(".jpeg") || nameLower.endsWith(".png") || nameLower.endsWith(".bmp");
         });
 
         if (imageFiles != null && imageFiles.length > 0) {
-            // 파일 이름순으로 정렬
+            // Sort by file name
             Arrays.sort(imageFiles, new Comparator<File>() {
                 @Override
                 public int compare(File file1, File file2) {
@@ -100,48 +149,27 @@ public class ImageToGif {
             });
         }
 
-        images = new ArrayList<>();
-        for (int i = 0; i < imageFiles.length; i++) {
+        input_images = new ArrayList<>();
+        for (int idx = 0; idx < imageFiles.length; idx++) {
             try {
-                images.add(ImageIO.read(imageFiles[i]));
+                input_images.add(ImageIO.read(imageFiles[idx]));
+                System.out.println("connect input image " + idx + " " + imageFiles[idx].getName());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        return images;
+        return input_images;
     }
 
     /**
-     * Initiates writing of a GIF file with the specified name.
-     *
-     * @param file
-     *          String containing output file name.
-     * @return false if open or initial write failed.
+     * it is method for writing string to gif file
+     * @param str - string content which write to file
+     * example1 : writeString("GIF89a");
      */
-    public static boolean Start(String file) {
-        boolean ok = true;
-        try {
-            out = new BufferedOutputStream(new FileOutputStream(file));
-            closeStream = false;
-            try {
-                writeString("GIF89a"); // add header
-            } catch (IOException e) {
-                ok = false;
-            }
-            closeStream = true;
-        } catch (IOException e) {
-            ok = false;
-        }
-        return started = ok;
-    }
-
-    /**
-     * Writes string to output stream
-     */
-    public static void writeString(String s) throws IOException {
-        for (int i = 0; i < s.length(); i++) {
-            out.write((byte) s.charAt(i)); //write data on outputstream for gif file
+    public static void writeString(String str) throws IOException {
+        for (int i = 0; i < str.length(); i++) {
+            output_gif.write((byte) str.charAt(i)); //write data on outputstream for gif file
         }
     }
 
@@ -152,12 +180,11 @@ public class ImageToGif {
      * <code>setSize</code> was not invoked, the size of the first image is used
      * for all subsequent frames.
      *
-     * @param im
-     *          BufferedImage containing frame to write.
-     * @return true if successful.
+     * @param im - BufferedImage containing frame to write.
+     * example1 : addFrame(image);
      */
     public static boolean addFrame(BufferedImage im) {
-        if ((im == null) || !started) {
+        if (im == null) {
             return false;
         }
         boolean ok = true;
@@ -166,7 +193,7 @@ public class ImageToGif {
                 // use first frame's size
                 setSize(im.getWidth(), im.getHeight());
             }
-            image = im;
+            cur_image = im;
             getImagePixels(); // convert to correct format if necessary
             analyzePixels(); // build color table & map pixels
             if (firstFrame) {
@@ -192,43 +219,35 @@ public class ImageToGif {
     }
 
     /**
-     * Flushes any pending data and closes output file. If writing to an
-     * OutputStream, the stream is not closed.
+     * it is method for finishing process for gif file
      */
     public static boolean finish() {
-        if (!started)
-            return false;
+
         boolean ok = true;
-        started = false;
         try {
-            out.write(0x3b); // gif trailer
-            out.flush();
-            if (closeStream) {
-                out.close();
-            }
+            output_gif.write(0x3b); // gif trailer
+            output_gif.flush();
+            output_gif.close();
+
         } catch (IOException e) {
             ok = false;
         }
 
         // reset for subsequent use
-        transIndex = 0;
-        out = null;
-        image = null;
+        //transIndex = 0;
+        output_gif = null;
+        cur_image = null;
         pixels = null;
         indexedPixels = null;
         colorTab = null;
-        closeStream = false;
         firstFrame = true;
-
         return ok;
     }
 
     /**
      * Sets the delay time between each frame, or changes it for subsequent frames
      * (applies to last frame added).
-     *
-     * @param ms
-     *          int delay time in milliseconds
+     * @param ms - int delay time in milliseconds
      */
     public static void setDelay(int ms) {
         if(ms >= 0) {
@@ -241,10 +260,7 @@ public class ImageToGif {
      * Sets the number of times the set of GIF frames should be played. Default is
      * 1; 0 means play indefinitely. Must be invoked before the first image is
      * added.
-     *
-     * @param iter
-     *          int number of iterations.
-     * @return
+     * @param iter - int number of iterations.
      */
     public static void setRepeat(int iter) {
         if (iter >= 0) {
@@ -253,66 +269,14 @@ public class ImageToGif {
     }
 
     /**
-     * Sets the GIF frame disposal code for the last added frame and any
-     * subsequent frames. Default is 0 if no transparent color has been set,
-     * otherwise 2.
-     *
-     * @param code
-     *          int disposal code.
-     */
-    public void setDispose(int code) {
-        if (code >= 0) {
-            dispose = code;
-        }
-    }
-
-    /**
-     * Sets the transparent color for the last added frame and any subsequent
-     * frames. Since all colors are subject to modification in the quantization
-     * process, the color in the final palette for each frame closest to the given
-     * color becomes the transparent color for that frame. May be set to null to
-     * indicate no transparent color.
-     *
-     * @param c
-     *          Color to be treated as transparent on display.
-     */
-    public static void setTransparent(Color c) {
-        transparent = c;
-    }
-
-
-    /**
      * Sets frame rate in frames per second. Equivalent to
      * <code>setDelay(1000/fps)</code>.
-     *
-     * @param fps
-     *          float frame rate (frames per second)
+     * @param fps - float frame rate (frames per second)
      */
     public static void setFrameRate(float fps) {
         if (fps != 0f) {
             delay = Math.round(100f / fps);
         }
-    }
-
-    /**
-     * Sets the GIF frame size. The default size is the size of the first frame
-     * added if this method is not invoked.
-     *
-     * @param w
-     *          int frame width.
-     * @param h
-     *          int frame width.
-     */
-    public static void setSize(int w, int h) {
-        if (started && !firstFrame)
-            return;
-        width = w;
-        height = h;
-        if (width < 1)
-            width = 320;
-        if (height < 1)
-            height = 240;
-        sizeSet = true;
     }
 
     /**
@@ -322,9 +286,7 @@ public class ImageToGif {
      * default, and produces good color mapping at reasonable speeds. Values
      * greater than 20 do not yield significant improvements in speed.
      *
-     * @param quality
-     *          int greater than 0.
-     * @return
+     * @param quality -int greater than 0.
      */
     public static void setQuality(int quality) {
         if (quality < 1)
@@ -332,6 +294,25 @@ public class ImageToGif {
         sample = quality;
     }
 
+
+
+    /**
+     * Sets the GIF frame size. The default size is the size of the first frame
+     * added if this method is not invoked.
+     * @param w - int frame width.
+     * @param h -int frame width.
+     */
+    public static void setSize(int w, int h) {
+        if (!firstFrame)
+            return;
+        img_width = w;
+        img_height = h;
+        if (img_width < 1)
+            img_width = 320;
+        if (img_height < 1)
+            img_height = 240;
+        sizeSet = true;
+    }
 
     /**
      * Analyzes image colors and creates color map.
@@ -358,110 +339,76 @@ public class ImageToGif {
             indexedPixels[i] = (byte) index;
         }
         pixels = null;
-        colorDepth = 8;
-        palSize = 7;
-        // get closest match to transparent color if specified
-        if (transparent != null) {
-            transIndex = findClosest(transparent);
-        }
-    }
-
-    /**
-     * Returns index of palette color closest to c
-     *
-     */
-    public static int findClosest(Color c) {
-        if (colorTab == null)
-            return -1;
-        int r = c.getRed();
-        int g = c.getGreen();
-        int b = c.getBlue();
-        int minpos = 0;
-        int dmin = 256 * 256 * 256;
-        int len = colorTab.length;
-        for (int i = 0; i < len;) {
-            int dr = r - (colorTab[i++] & 0xff);
-            int dg = g - (colorTab[i++] & 0xff);
-            int db = b - (colorTab[i] & 0xff);
-            int d = dr * dr + dg * dg + db * db;
-            int index = i / 3;
-            if (usedEntry[index] && (d < dmin)) {
-                dmin = d;
-                minpos = index;
-            }
-            i++;
-        }
-        return minpos;
     }
 
     /**
      * Extracts image pixels into byte array "pixels"
      */
     public static void getImagePixels() {
-        int w = image.getWidth();
-        int h = image.getHeight();
-        int type = image.getType();
-        if ((w != width) || (h != height) || (type != BufferedImage.TYPE_3BYTE_BGR)) {
+        int w = cur_image.getWidth();
+        int h = cur_image.getHeight();
+        int type = cur_image.getType();
+        if ((w != img_width) || (h != img_height) || (type != BufferedImage.TYPE_3BYTE_BGR)) {
             // create new image with right size/format
-            BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+            BufferedImage temp = new BufferedImage(img_width, img_height, BufferedImage.TYPE_3BYTE_BGR);
             Graphics2D g = temp.createGraphics();
-            g.drawImage(image, 0, 0, null);
-            image = temp;
+            g.drawImage(cur_image, 0, 0, null);
+            cur_image = temp;
         }
-        pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+        pixels = ((DataBufferByte) cur_image.getRaster().getDataBuffer()).getData();
     }
 
     /**
      * Writes Graphic Control Extension
      */
     public static void writeGraphicCtrlExt() throws IOException {
-        out.write(0x21); // extension introducer
-        out.write(0xf9); // GCE label
-        out.write(4); // data block size
+        output_gif.write(0x21); // extension introducer
+        output_gif.write(0xf9); // GCE label
+        output_gif.write(4); // data block size
         int transp, disp;
-        if (transparent == null) {
+        if (true) { //transparent == null
             transp = 0;
             disp = 0; // dispose = no action
         } else {
             transp = 1;
             disp = 2; // force clear if using transparent color
         }
-        if (dispose >= 0) {
-            disp = dispose & 7; // user override
+        if (true) { //dispose >= 0
+            disp = 100 & 7; // user override, dispose & 7
         }
         disp <<= 2;
 
         // packed fields
-        out.write(0 | // 1:3 reserved
+        output_gif.write(0 | // 1:3 reserved
                 disp | // 4:6 disposal
                 0 | // 7 user input - 0 = none
                 transp); // 8 transparency flag
 
         writeShort(delay); // delay x 1/100 sec
-        out.write(transIndex); // transparent color index
-        out.write(0); // block terminator
+        output_gif.write(0); // transparent color index
+        output_gif.write(0); // block terminator
     }
 
     /**
      * Writes Image Descriptor
      */
     public static void writeImageDesc() throws IOException {
-        out.write(0x2c); // image separator
+        output_gif.write(0x2c); // image separator
         writeShort(0); // image position x,y = 0,0
         writeShort(0);
-        writeShort(width); // image size
-        writeShort(height);
+        writeShort(img_width); // image size
+        writeShort(img_height);
         // packed fields
         if (firstFrame) {
             // no LCT - GCT is used for first (or only) frame
-            out.write(0);
+            output_gif.write(0);
         } else {
             // specify normal LCT
-            out.write(0x80 | // 1 local color table 1=yes
+            output_gif.write(0x80 | // 1 local color table 1=yes
                     0 | // 2 interlace - 0=no
                     0 | // 3 sorted - 0=no
                     0 | // 4-5 reserved
-                    palSize); // 6-8 size of color table
+                    7); // 6-8 size of color table palSize
         }
     }
 
@@ -470,40 +417,40 @@ public class ImageToGif {
      */
     public static void writeLSD() throws IOException {
         // logical screen size
-        writeShort(width);
-        writeShort(height);
+        writeShort(img_width);
+        writeShort(img_height);
         // packed fields
-        out.write((0x80 | // 1 : global color table flag = 1 (gct used)
+        output_gif.write((0x80 | // 1 : global color table flag = 1 (gct used)
                 0x70 | // 2-4 : color resolution = 7
                 0x00 | // 5 : gct sort flag = 0
-                palSize)); // 6-8 : gct size
+                7)); // 6-8 : gct size,palSize
 
-        out.write(0); // background color index
-        out.write(0); // pixel aspect ratio - assume 1:1
+        output_gif.write(0); // background color index
+        output_gif.write(0); // pixel aspect ratio - assume 1:1
     }
 
     /**
      * Writes Netscape application extension to define repeat count.
      */
     public static void writeNetscapeExt() throws IOException {
-        out.write(0x21); // extension introducer
-        out.write(0xff); // app extension label
-        out.write(11); // block size
+        output_gif.write(0x21); // extension introducer
+        output_gif.write(0xff); // app extension label
+        output_gif.write(11); // block size
         writeString("NETSCAPE" + "2.0"); // app id + auth code
-        out.write(3); // sub-block size
-        out.write(1); // loop sub-block id
+        output_gif.write(3); // sub-block size
+        output_gif.write(1); // loop sub-block id
         writeShort(repeat); // loop count (extra iterations, 0=repeat forever)
-        out.write(0); // block terminator
+        output_gif.write(0); // block terminator
     }
 
     /**
      * Writes color table
      */
     public static void writePalette() throws IOException {
-        out.write(colorTab, 0, colorTab.length);
+        output_gif.write(colorTab, 0, colorTab.length);
         int n = (3 * 256) - colorTab.length;
         for (int i = 0; i < n; i++) {
-            out.write(0);
+            output_gif.write(0);
         }
     }
 
@@ -511,25 +458,41 @@ public class ImageToGif {
      * Encodes and writes pixel data
      */
     public static void writePixels() throws IOException {
-        LZWEncoder encoder = new LZWEncoder(width, height, indexedPixels, colorDepth);
-        encoder.encode(out);
+        LZWEncoder encoder = new LZWEncoder(img_width, img_height, indexedPixels, 8); //color_depth
+        encoder.encode(output_gif);
     }
 
     /**
      * Write 16-bit value to output stream, LSB first
      */
     public static void writeShort(int value) throws IOException {
-        out.write(value & 0xff);
-        out.write((value >> 8) & 0xff);
+        output_gif.write(value & 0xff);
+        output_gif.write((value >> 8) & 0xff);
     }
-
-
-
 }
 
 
 class NeuQuant {
-
+    /*
+     * NeuQuant Neural-Net Quantization Algorithm
+     * ------------------------------------------
+     *
+     * Copyright (c) 1994 Anthony Dekker
+     *
+     * NEUQUANT Neural-Net quantization algorithm by Anthony Dekker, 1994. See
+     * "Kohonen neural networks for optimal colour quantization" in "Network:
+     * Computation in Neural Systems" Vol. 5 (1994) pp 351-367. for a discussion of
+     * the algorithm.
+     *
+     * Any party obtaining a copy of these files from the author, directly or
+     * indirectly, is granted, free of charge, a full and unrestricted irrevocable,
+     * world-wide, paid up, royalty-free, nonexclusive right and license to deal in
+     * this software and documentation files (the "Software"), including without
+     * limitation the rights to use, copy, modify, merge, publish, distribute,
+     * sublicense, and/or sell copies of the Software, and to permit persons who
+     * receive copies from any such party to do so, with the only requirement being
+     * that this copyright notice remain intact.
+     */
     public static final int netsize = 256; /* number of colours used */
 
     /* four primes near 500 - assume no image has a length so large */
@@ -1016,7 +979,21 @@ class NeuQuant {
 // K Weiner 12/00
 
 class LZWEncoder {
-
+    /*
+     * Copyright (C) 2015 Square, Inc.
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *      http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
     private static final int EOF = -1;
 
     private int imgW, imgH;

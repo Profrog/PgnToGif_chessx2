@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * it is module for pgn string data from chess.com/lichess.org convert to array table for java language
+ * @author mingyu Kim(ache159@naver.com)
  */
 public class PgnParse {
     //public static Logger logger = Logger.getLogger(PgnParse.class.getName());
@@ -203,6 +204,8 @@ public class PgnParse {
                     showTableValue(check_table_mem.size()-1);
                 }
             }
+
+            System.out.println("finished PgnParser Process");
         }
 
         catch (Exception e)
