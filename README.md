@@ -1,13 +1,13 @@
-# CHESSX2_PGNPARSER
+# chessx2PgnToGif
 <a href="https://developer.android.com" target="_blank"><img src="https://img.shields.io/badge/Android-3DDC84?style=flat-square&logo=Android Studio&logoColor=white"/></a>
 <a href="https://developer.android.com" target="_blank"><img src="https://img.shields.io/badge/intellijidea-000000?style=flat-square&logo=intellijidea&logoColor=white"/></a>
 <a href="https://developer.android.com" target="_blank"><img src="https://img.shields.io/badge/apachemaven-C71A36?style=flat-square&logo=apachemaven&logoColor=white"/></a>
 <a href="https://developer.android.com" target="_blank"><img src="https://img.shields.io/badge/Gradle-02303A?style=flat-square&logo=Gradle&logoColor=white"/></a>
 
-![Screenshot from 2024-05-12 01-48-00](https://github.com/Profrog/chessx2_pgnparser/assets/26535065/28b44443-1518-4740-a53a-7e80e03fbe02)
+![test](https://github.com/user-attachments/assets/cfaab0ea-98a3-492c-8943-e5f55b9863ec)
 
 
-stable version :  '2.0.2'
+stable version :  '2.0.3'
 
 ## Introduction
 hello everyone, CHESSX2_PGNPARSER is java library for programming service for controlling PGN data
@@ -76,9 +76,11 @@ User service simple example
     
     
         public static void main(String[] args){
+            String dir0 = "/home/mingyu/Pictures/chess";
+            List<int[][]> alpa =  PgnParse.parserInit(pgn_example,0,0);
+            String input_dir = PgnToImage.imageInit(alpa,dir0);
 
-            //pgn_example is sample of chees.com's pgn, pgn_example2 is sample of lichess's pgndata
-            PgnParse.parserInit(pgn_example,0,1);
+            ImageToGif.gifInit(dir0 + "/test.gif", input_dir, 1000);
         }
     
     }
@@ -96,7 +98,6 @@ https://www.javadoc.io/doc/io.github.profrog/chessx2/latest/io/github/profrog/pa
 ## USER GUIDE(KOREAN)  
 refer to 
 https://blog.naver.com/ache159/223444101933
-
 video : https://www.youtube.com/watch?v=tjTLnJ-7wKw  
 
 
