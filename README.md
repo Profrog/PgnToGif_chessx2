@@ -7,7 +7,7 @@
 ![test](https://github.com/user-attachments/assets/cfaab0ea-98a3-492c-8943-e5f55b9863ec)
 
 
-stable version :  '2.0.2'
+stable version :  '2.0.3'
 
 ## Introduction
 hello everyone, CHESSX2_PGNPARSER is java library for programming service for controlling PGN data
@@ -76,9 +76,11 @@ User service simple example
     
     
         public static void main(String[] args){
+            String dir0 = "/home/mingyu/Pictures/chess";
+            List<int[][]> alpa =  PgnParse.parserInit(pgn_example,0,0);
+            String input_dir = PgnToImage.imageInit(alpa,dir0);
 
-            //pgn_example is sample of chees.com's pgn, pgn_example2 is sample of lichess's pgndata
-            PgnParse.parserInit(pgn_example,0,1);
+            ImageToGif.gifInit(dir0 + "/test.gif", input_dir, 1000);
         }
     
     }
@@ -96,7 +98,6 @@ https://www.javadoc.io/doc/io.github.profrog/chessx2/latest/io/github/profrog/pa
 ## USER GUIDE(KOREAN)  
 refer to 
 https://blog.naver.com/ache159/223444101933
-
 video : https://www.youtube.com/watch?v=tjTLnJ-7wKw  
 
 
