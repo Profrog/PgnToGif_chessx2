@@ -1,4 +1,4 @@
-# ChessPgnToGif
+# chessx2PgnToGif
 <a href="https://developer.android.com" target="_blank"><img src="https://img.shields.io/badge/Android-3DDC84?style=flat-square&logo=Android Studio&logoColor=white"/></a>
 <a href="https://developer.android.com" target="_blank"><img src="https://img.shields.io/badge/intellijidea-000000?style=flat-square&logo=intellijidea&logoColor=white"/></a>
 <a href="https://developer.android.com" target="_blank"><img src="https://img.shields.io/badge/apachemaven-C71A36?style=flat-square&logo=apachemaven&logoColor=white"/></a>
