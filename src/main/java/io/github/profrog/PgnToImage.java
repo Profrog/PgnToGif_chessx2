@@ -37,7 +37,7 @@ public class PgnToImage {
     public static List<BufferedImage> output_images;
 
     /**
-     *  piece_width, piece_height,board_width,board_height is size of piece & board image
+     *  piece_width, piece_height,board_width,board_height is size of piece and board image
      */
     public static int board_width = 400;
     public static int board_height = 400;
@@ -67,19 +67,18 @@ public class PgnToImage {
      * @param original_dir - directory for original images
      * example1 : PgnToImage.imageInit(PgnParse.parserInit(pgn_example,0,0), "/home/mingyu/Pictures/chess");
      */
-    public static String imageInit(List<int[][]> check_table_mem, String original_dir) throws IOException {
+    public static String imageInit(List<int[][]> check_table_mem, String original_dir, String skin_dir) throws IOException {
         int index = 0;
 
-        connectLinkToImage(original_dir);
+        connectLinkToImage(original_dir,skin_dir);
         output_images = new ArrayList<>();
         output_dir = original_dir +  output_folder + "/";
         File directory = new File(output_dir);
 
         if (directory.exists()) {
-            directory.delete();
+            deleteFolder(directory);
         }
         directory.mkdirs();
-
 
         for (int idx = 0; idx < check_table_mem.size(); ++idx) {
             BufferedImage cur_img = makeImage(check_table_mem.get(idx));
@@ -93,29 +92,64 @@ public class PgnToImage {
     }
 
     /**
+     * it is method for deleting output folder and resetting
+     * @param folder - directory for deleting
+     * example1 :  deleteFolder("/home/mingyu/Pictures/chess");
+     */
+    public static boolean deleteFolder(File folder) {
+        File[] files = folder.listFiles();
+        if (files != null) {  // 폴더가 비어있지 않은 경우
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    deleteFolder(file);  // 재귀적으로 하위 폴더 삭제
+                } else {
+                    file.delete();  // 파일 삭제
+                }
+            }
+        }
+        return folder.delete();  // 최종적으로 폴더 삭제
+    }
+
+
+    /**
      * it is method for getting input image about board and piece
      * @param original_dir - directory for original images
      * example1 :  connectLinkToImage("/home/mingyu/Pictures/chess");
      */
-    public static boolean connectLinkToImage(String original_dir) {
+    public static boolean connectLinkToImage(String original_dir,String skin_dir) {
         original_images = new ArrayList<>();
+        File[] imageFiles;
 
-        File directory = new File(original_dir);
-        File[] imageFiles = directory.listFiles((dir, name) -> {
-            String nameLower = name.toLowerCase();
-            return nameLower.endsWith(".jpg") || nameLower.endsWith(".jpeg") || nameLower.endsWith(".png") || nameLower.endsWith(".bmp");
-        });
-
-        if (imageFiles != null && imageFiles.length > 0) {
-            //sorting by file name
-            Arrays.sort(imageFiles, new Comparator<File>() {
-                @Override
-                public int compare(File file1, File file2) {
-                    return file1.getName().compareTo(file2.getName());
-                }
+        if(skin_dir == null) {
+            File directory = new File(original_dir);
+            imageFiles = directory.listFiles((dir, name) -> {
+                String nameLower = name.toLowerCase();
+                return nameLower.endsWith(".jpg") || nameLower.endsWith(".jpeg") || nameLower.endsWith(".png") || nameLower.endsWith(".bmp");
             });
+
+            if (imageFiles != null && imageFiles.length > 0) {
+                //sorting by file name
+                Arrays.sort(imageFiles, new Comparator<File>() {
+                    @Override
+                    public int compare(File file1, File file2) {
+                        return file1.getName().compareTo(file2.getName());
+                    }
+                });
+            }
         }
 
+        else {
+            String[] paths = skin_dir.replace("[", "")
+                    .replace("]", "")
+                    .replace("\"", "")
+                    .split(",");
+
+            imageFiles = new File[paths.length];
+            for(int idx = 0; idx < paths.length; ++idx)
+            {
+                imageFiles[idx] = new File(paths[idx]);
+            }
+        }
         for (int idx = 0; idx < imageFiles.length; idx++) {
             try {
                 if (idx == 0) {
