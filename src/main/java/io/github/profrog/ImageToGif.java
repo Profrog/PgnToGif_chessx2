@@ -107,6 +107,8 @@ public class ImageToGif {
      * @param output_dir - location for saving gif data added gif's name
      * @param input_dir - buffer image set which make gif file
      * @param delay - millisecond of delay frame by frame
+     * @return - action success/failure
+     * 
      * example1 : ImageToGif.gifInit("/home/mingyu/Pictures/Wallpapers/test.gif", test_set, 1000);
      */
     public static boolean gifInit(String output_dir, String input_dir, int delay) throws IOException {
@@ -130,6 +132,7 @@ public class ImageToGif {
      * it is method for getting input image about board and piece
      * @param original_dir - directory for original images
      * example1 : connectLinkToImage("/home/mingyu/Pictures/chess/output");
+     * @return - action success/failure
      */
     public static List<BufferedImage> connectLinkToImage(String original_dir)
     {
@@ -166,6 +169,7 @@ public class ImageToGif {
      * it is method for writing string to gif file
      * @param str - string content which write to file
      * example1 : writeString("GIF89a");
+     * 
      */
     public static void writeString(String str) throws IOException {
         for (int i = 0; i < str.length(); i++) {
@@ -182,6 +186,7 @@ public class ImageToGif {
      *
      * @param im - BufferedImage containing frame to write.
      * example1 : addFrame(image);
+     * @return - action success/failure
      */
     public static boolean addFrame(BufferedImage im) {
         if (im == null) {
@@ -220,6 +225,7 @@ public class ImageToGif {
 
     /**
      * it is method for finishing process for gif file
+     * @return - action success/failure
      */
     public static boolean finish() {
 
@@ -360,6 +366,7 @@ public class ImageToGif {
 
     /**
      * Writes Graphic Control Extension
+     * 
      */
     public static void writeGraphicCtrlExt() throws IOException {
         output_gif.write(0x21); // extension introducer
@@ -391,6 +398,7 @@ public class ImageToGif {
 
     /**
      * Writes Image Descriptor
+     * 
      */
     public static void writeImageDesc() throws IOException {
         output_gif.write(0x2c); // image separator
@@ -414,6 +422,7 @@ public class ImageToGif {
 
     /**
      * Writes Logical Screen Descriptor
+     * 
      */
     public static void writeLSD() throws IOException {
         // logical screen size
@@ -431,6 +440,7 @@ public class ImageToGif {
 
     /**
      * Writes Netscape application extension to define repeat count.
+     * 
      */
     public static void writeNetscapeExt() throws IOException {
         output_gif.write(0x21); // extension introducer
@@ -445,6 +455,7 @@ public class ImageToGif {
 
     /**
      * Writes color table
+     * 
      */
     public static void writePalette() throws IOException {
         output_gif.write(colorTab, 0, colorTab.length);
@@ -456,6 +467,7 @@ public class ImageToGif {
 
     /**
      * Encodes and writes pixel data
+     * 
      */
     public static void writePixels() throws IOException {
         LZWEncoder encoder = new LZWEncoder(img_width, img_height, indexedPixels, 8); //color_depth
@@ -464,6 +476,8 @@ public class ImageToGif {
 
     /**
      * Write 16-bit value to output stream, LSB first
+     * @param value - str data
+     * 
      */
     public static void writeShort(int value) throws IOException {
         output_gif.write(value & 0xff);
@@ -776,6 +790,7 @@ class NeuQuant {
      * Search for BGR values 0..255 (after net is unbiased) and return colour
      * index
      * ----------------------------------------------------------------------------
+     * @return - action success/failure
      */
     public static int map(int b, int g, int r) {
 
@@ -843,6 +858,9 @@ class NeuQuant {
         return (best);
     }
 
+    /*
+     * @return - action success/failure
+     */
     public static byte[] process() {
         learn();
         unbiasnet();
@@ -925,6 +943,7 @@ class NeuQuant {
 
     /*
      * Search for biased BGR values ----------------------------
+     * @return - action success/failure
      */
     public static int contest(int b, int g, int r) {
 
@@ -1217,6 +1236,9 @@ class LZWEncoder {
         }
     }
 
+    /*
+     * @return - action success/failure
+     */
     final int MAXCODE(int n_bits) {
         return (1 << n_bits) - 1;
     }

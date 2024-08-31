@@ -36,7 +36,7 @@ public class main {
     public static void main(String[] args) throws IOException {
         String dir0 = "/home/mingyu/Pictures/chess";
         List<int[][]> alpa =  PgnParse.parserInit(pgn_example,0,0);
-        String input_dir = PgnToImage.imageInit(alpa,dir0);
+        String input_dir = PgnToImage.imageInit(alpa,dir0,null);
 
         ImageToGif.gifInit(dir0 + "/test.gif", input_dir, 1000);
     }
