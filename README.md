@@ -7,7 +7,7 @@
 ![test](https://github.com/user-attachments/assets/cfaab0ea-98a3-492c-8943-e5f55b9863ec)
 
 
-stable version :  '2.0.4'
+stable version :  '2.0.5'
 
 ## Introduction
 hello everyone, CHESSX2_PGNPARSER is java library for programming service for controlling PGN data
