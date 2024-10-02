@@ -12,32 +12,29 @@ import java.util.List;
  */
 public class main {
 
-    public  static  String pgn_example = "[Event \"Live Chess\"]\n" +
+    public  static  String pgn_example = "[Event \"Let's Play!\"]\n" +
             "[Site \"Chess.com\"]\n" +
-            "[Date \"2024.05.09\"]\n" +
-            "[Round \"?\"]\n" +
-            "[White \"Fluffy7Bunny\"]\n" +
-            "[Black \"PFchessX2\"]\n" +
+            "[Date \"2024-09-17\"]\n" +
+            "[White \"jadenlee0724\"]\n" +
+            "[Black \"alexPark0609\"]\n" +
             "[Result \"1-0\"]\n" +
-            "[ECO \"D06\"]\n" +
-            "[WhiteElo \"1489\"]\n" +
-            "[BlackElo \"1418\"]\n" +
-            "[TimeControl \"300+5\"]\n" +
-            "[EndTime \"5:51:21 PDT\"]\n" +
-            "[Termination \"Fluffy7Bunny won by resignation\"]\n" +
-            "\n" +
-            "1. d4 d5 2. c4 Nf6 3. cxd5 Nxd5 4. e4 Nb6 5. Nf3 Bg4 6. Be2 e6 7. O-O Be7 8. Nc3\n" +
-            "O-O 9. Bf4 Nc6 10. Be3 Bxf3 11. Bxf3 Nc4 12. b3 Nxe3 13. fxe3 Bb4 14. Rc1 Qg5\n" +
-            "15. Qe2 Rfd8 16. Nb5 Rac8 17. e5 a6 18. Bxc6 bxc6 19. Na7 Ra8 20. Nxc6 Ba3 21.\n" +
-            "Nxd8 Bxc1 22. Rxc1 Rxd8 23. Rxc7 h6 24. Qf3 Rd5 25. Rxf7 Qg6 26. Rf8+ Kh7 27.\n" +
-            "Qf1 Qe4 28. Rf3 Rd7 29. Qxa6 Rc7 30. Qxe6 Rc1+ 31. Kf2 Qh4+ 32. Rg3 Rc2+ 33. Kf3\n" +
-            "Qh5+ 34. Qg4 Qf7+ 35. Ke4 Qb7+ 36. Kd3 Rxa2 37. Qe4+ 1-0";
+            "[WhiteElo \"783\"]\n" +
+            "[BlackElo \"1003\"]\n" +
+            "[TimeControl \"1/172800\"]\n" +
+            "[EndDate \"2024-09-21\"]\n" +
+            "[Termination \"jadenlee0724님이 체크메이트로 승리하였습니다\"]\n" +
+            "1. d4 Nf6 2. Nc3 d5 3. Bg5 e6 4. Nf3 h6 5. Bxf6 Qxf6 6. e4 c6 7. exd5 cxd5 8.\n" +
+            "Bb5+ Nd7 9. O-O a6 10. Bxd7+ Bxd7 11. Re1 Bd6 12. Nxd5 Qd8 13. Ne5 Bxe5 14. Rxe5\n" +
+            "O-O 15. Nc3 Qb6 16. Rb1 Bc6 17. d5 Rfd8 18. Qf3 Bd7 19. dxe6 Bxe6 20. Nd5 Qd6\n" +
+            "21. Rxe6 fxe6 22. Nc3 b5 23. Ne4 Qd5 24. g3 Qxa2 25. Nc3 Qa5 26. b4 Qb6 27. Ne4\n" +
+            "Qc6 28. Nf6+ gxf6 29. Qxc6 Kf7 30. Qf3 Rac8 31. Qh5+ Kg7 32. Qe2 e5 33. Ra1 Rc6\n" +
+            "34. Qe4 Rdd6 35. Rc1 Kf7 36. c4 bxc4 37. Rxc4 Rb6 38. Qh7+ Ke6 39. Qg8+ Kf5 40.\n" +
+            "Qg4# 1-0";
 
     public static void main(String[] args) throws IOException {
         String dir0 = "/home/mingyu/Pictures/chess";
-        List<int[][]> alpa =  PgnParse.parserInit(pgn_example,0,0);
+        List<int[][]> alpa =  PgnParse.parserInit(pgn_example,0,1);
         String input_dir = PgnToImage.imageInit(alpa,dir0,null);
-
         ImageToGif.gifInit(dir0 + "/test.gif", input_dir, 1000);
     }
 }

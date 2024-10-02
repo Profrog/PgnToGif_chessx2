@@ -88,6 +88,18 @@ public class PgnParse {
      */
     public static int bottom_p = board_size -1; //bottom row basis index
 
+
+    /**
+     * check enpassant_state, only case 1 mean that enpassant enable
+     */
+    public static int enpassant_state = 0;
+
+    /**
+     * check where enpassant target
+     */
+    public static int enpassant_col = '@';
+
+
     /**
      * it is init method for controlling pgn data in gif_chessx2
      * @param pgn_data0 - pgn data which you get from get chess.com or lichess.org
@@ -236,7 +248,8 @@ public class PgnParse {
         int board_label = board_size -1;
         int piece_label = board_size -2;
 
-        boolean xcountrol = false; //checking for catch state
+
+        --enpassant_state;
 
         if(move0.equals("O-O"))
         {
@@ -261,6 +274,7 @@ public class PgnParse {
                 try {
                     char cur_char = move0.charAt(piece_index);
                     char x_char = '@';
+                    boolean x_countrol = false; //checking for catch state
                     boolean pawn_state = true;
                     boolean promotion_check = false;
 
@@ -304,13 +318,15 @@ public class PgnParse {
                         else if (cur_char == 'x')
                         {
                             //print("remove piece state");
-                            xcountrol = true;
+                            x_countrol = true;
                         }
 
-
                         else{
-                            //print("set position for remove piece state");
+                            //print("set position for piece move where");
                             x_char = cur_char;
+                            //case 1 : gxf6 -> saving g
+                            //case 2 : Rfd6 -> saving f
+                            //case 3 : fd6 -> sabing f
                         }
 
                         cur_char = move0.charAt(++piece_index);
@@ -347,10 +363,10 @@ public class PgnParse {
                             piece_value = 1 + piece_label*isblack;
                         }
 
-                        if(xcountrol) //catch state for other piece
+                        if(x_countrol) //catch state for other piece
                         {
                             int[][] prv_pos_array = {{1,-1},{1,1}}; //{0,-1},{0,1} for control enpassnt contorl
-                            previous_move = prvMoveAlgorithm(prv_pos_array,row_index,col_index,piece_value,x_char);
+                            previous_move = prvMoveAlgorithm(prv_pos_array,row_index,col_index,piece_value,x_char,x_countrol);
                         }
 
                         else
@@ -358,16 +374,18 @@ public class PgnParse {
                             int[][] prv_pos_array = new int[2][2];
                             prv_pos_array[0][0] = 1;
                             prv_pos_array[0][1] = 0;
-                            prv_pos_array[1][0] = 1;
+                            prv_pos_array[1][0] = 1; //for consideration first moving
                             prv_pos_array[1][1] = 0;
 
                             if(pawn_first_move[piece_value/7].charAt(col_index) == '0') //check first pawn moving
                             {
                                 prv_pos_array[1][0] = 2;
                                 pawn_first_move[piece_value/7].setCharAt(col_index, '1');
+                                enpassant_state = 2; //it means that next moving has case of enpassant
+                                enpassant_col = col_index;
                             }
 
-                            previous_move = prvMoveAlgorithm(prv_pos_array,row_index,col_index,piece_value,x_char);
+                            previous_move = prvMoveAlgorithm(prv_pos_array,row_index,col_index,piece_value,x_char,x_countrol);
                         }
                     }
 
@@ -375,7 +393,7 @@ public class PgnParse {
                     {
                             //print("night case control");
                             int[][] prv_pos_array = {{2,1},{2,-1},{1,2},{1,-2},{-1,2},{-1,-2},{-2,1},{-2,-1}};
-                            previous_move = prvMoveAlgorithm(prv_pos_array,row_index,col_index,piece_value,x_char);
+                            previous_move = prvMoveAlgorithm(prv_pos_array,row_index,col_index,piece_value,x_char,x_countrol);
                     }
 
 
@@ -395,7 +413,7 @@ public class PgnParse {
 
                         }
 
-                        previous_move = prvMoveAlgorithm(prv_pos_array,row_index,col_index,piece_value,x_char);
+                        previous_move = prvMoveAlgorithm(prv_pos_array,row_index,col_index,piece_value,x_char,x_countrol);
                     }
 
                     else if(piece_value == 4 || piece_value == 10)
@@ -414,7 +432,7 @@ public class PgnParse {
 
                         }
 
-                        previous_move = prvMoveAlgorithm(prv_pos_array,row_index,col_index,piece_value,x_char);
+                        previous_move = prvMoveAlgorithm(prv_pos_array,row_index,col_index,piece_value,x_char,x_countrol);
                     }
 
                     else if(piece_value == 5 || piece_value == 11)
@@ -433,7 +451,7 @@ public class PgnParse {
 
                         }
 
-                        previous_move = prvMoveAlgorithm(prv_pos_array,row_index,col_index,piece_value,x_char);
+                        previous_move = prvMoveAlgorithm(prv_pos_array,row_index,col_index,piece_value,x_char,x_countrol);
                     }
 
                     else if(piece_value == 6 || piece_value == 12)
@@ -441,7 +459,7 @@ public class PgnParse {
                         //print("king case control");
 
                         int[][] prv_pos_array = {{1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
-                        previous_move = prvMoveAlgorithm(prv_pos_array,row_index,col_index,piece_value,x_char);
+                        previous_move = prvMoveAlgorithm(prv_pos_array,row_index,col_index,piece_value,x_char,x_countrol);
                     }
 
 
@@ -451,9 +469,7 @@ public class PgnParse {
 
             }
 
-
         return blackBottomControl(black_bottom_opt);
-
     }
 
 
@@ -463,10 +479,11 @@ public class PgnParse {
      * @param row_index - target piece's new row index following nxtMoveAlgorithm
      * @param col_index - target piece's new col index following nxtMoveAlgorithm
      * @param piece_value - gets piece value data from nxtMoveAlgorithm (for more detail follow addMetadataToPiecedata())
-     * @param x_char - option for control catching other enemy piece
+     * @param x_char - option index for control
+     * @param x_control - option true : catch enemy, false : controly my piece
      * @return true/false -: is this method's successful?
      */
-    public  static  boolean prvMoveAlgorithm(int[][] prv_pos_array, int row_index, int col_index, int piece_value, char x_char)
+    public  static  boolean prvMoveAlgorithm(int[][] prv_pos_array, int row_index, int col_index, int piece_value, char x_char, boolean x_control)
     {
         try {
             int black_opt = 1;
@@ -485,14 +502,11 @@ public class PgnParse {
 
                 int match_row_index = prv_row_index;
                 int match_col_index = prv_col_index;
-                boolean x_control = false;
 
-                if (Character.isAlphabetic(x_char)) {
+                if (Character.isAlphabetic(x_char)) { //check optional moving
                     match_col_index = piece_data.get("" + x_char);
-                    x_control = true;
                 } else if (Character.isDigit(x_char)) {
                     match_row_index = piece_data.get("" + x_char);
-                    x_control = true;
                 }
 
                 //print(String.valueOf(piece_value) + " " +String.valueOf(prv_row_index) + " " + String.valueOf(prv_col_index));
@@ -512,15 +526,22 @@ public class PgnParse {
                     //print("there are no piece ");
                 }
 
+               else if(x_char == '@' && cur_chess_table[getRealRow(prv_row_index)][prv_col_index] == piece_value)
+               {
+                   //print("no option state about special moving");
+                   setChessTable(0, getRealRow(prv_row_index), prv_col_index); //cur_chess_table[prv_row_index][prv_col_index] = 0;
+                   return true;
+               }
+
                else if(cur_chess_table[getRealRow(prv_row_index)][prv_col_index] == piece_value)
                {
-
+                   //print("option state about special moving");
                    if((prv_row_index == match_row_index) && (prv_col_index == match_col_index))
                    {
-                       if(x_control && (piece_value == 1 || piece_value == 7)) //enpassant control
+                       if(enpassant_state == 1 && (enpassant_col == prv_col_index) &&(piece_value == 1 || piece_value == 7)) //enpassant control
                        {
-                           //print("x_control");
-                           if(piece_value != cur_chess_table[getRealRow(row_index - black_opt)][col_index]) {
+                           //print("enpassant_control");
+                           if(piece_value == 8 - cur_chess_table[getRealRow(row_index - black_opt)][col_index]) {
                                setChessTable(0, getRealRow(row_index - black_opt), col_index);
                            }
                        }
