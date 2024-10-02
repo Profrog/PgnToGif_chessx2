@@ -1,11 +1,12 @@
 package io.github.profrog;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 import java.io.*;
 import java.awt.*;
 import java.awt.image.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
 
 
@@ -69,7 +70,6 @@ public class PgnToImage {
      */
     public static String imageInit(List<int[][]> check_table_mem, String original_dir, String skin_dir) throws IOException {
         int index = 0;
-
         connectLinkToImage(original_dir,skin_dir);
         output_images = new ArrayList<>();
         output_dir = original_dir +  output_folder + "/";
@@ -83,7 +83,7 @@ public class PgnToImage {
         for (int idx = 0; idx < check_table_mem.size(); ++idx) {
             BufferedImage cur_img = makeImage(check_table_mem.get(idx));
             output_images.add(cur_img);
-            saveImage(cur_img, String.format(numbering_format,++index));
+            saveImage(cur_img, String.format(numbering_format,++index),0.2f);
             System.out.println("make output image " + String.format(numbering_format,index) + "." + extension_type);
         }
 
@@ -215,13 +215,42 @@ public class PgnToImage {
 
     /**
      * it is method for saving image following user intent
-     * @param original - original image for saving
+     * @param original0 - original image for saving
      * @param name - name for saving
      * example1 : resizeImage(ImageIO.read(imageFiles[idx])
      */
-    public static boolean saveImage(BufferedImage original, String name) throws IOException {
+    public static boolean saveImage(BufferedImage original0, String name,float quality) throws IOException {
         File outputFile = new File(output_dir + name + "." + extension_type);
-        ImageIO.write(original, extension_type, outputFile);
+        if(extension_type == "jpg") {
+            BufferedImage original = new BufferedImage(original0.getWidth(), original0.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = original.createGraphics();
+            g.setColor(Color.WHITE);
+            g.fillRect(0, 0, original.getWidth(), original.getHeight());
+            // PNG 이미지 그리기
+            g.drawImage(original0, 0, 0, null);
+            g.dispose(); // 그래픽스 객체 해제
+
+            Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
+            ImageWriter writer = writers.next(); // JPEG 형식의 첫 번째 writer를 선택
+            try (ImageOutputStream ios = ImageIO.createImageOutputStream(outputFile)) {
+                writer.setOutput(ios);
+
+                // 압축 파라미터 설정
+                ImageWriteParam param = writer.getDefaultWriteParam();
+                if (param.canWriteCompressed()) {
+                    param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                    param.setCompressionQuality(quality); // 설정한 품질로 압축
+                }
+                // 이미지 저장
+                writer.write(null, new javax.imageio.IIOImage(original, null, null), param);
+            } finally {
+                writer.dispose(); // writer 자원 해제
+            }
+        }
+
+        else { //png 케이스
+            ImageIO.write(original0, extension_type, outputFile);
+        }
         return true;
     }
 

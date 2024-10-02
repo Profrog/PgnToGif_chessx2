@@ -41,12 +41,14 @@ public class ImageToGif {
      */
     public static int img_width; // image's width size
     public static int img_height; //image's height size
-
+    public static int color_num = 256; //original is 256
 
     /**
      * input_images is input data for making gif output
      */
     public static List<BufferedImage> input_images;
+
+
 
 
     /**
@@ -95,7 +97,7 @@ public class ImageToGif {
      * userEntry are parameter for active color data set from colorTab
      * active palette entries
      */
-    public static boolean[] usedEntry = new boolean[256];
+    public static boolean[] usedEntry = new boolean[color_num];
 
     /**
      * firstFrame is parameter for check event about first frame
@@ -314,9 +316,9 @@ public class ImageToGif {
         img_width = w;
         img_height = h;
         if (img_width < 1)
-            img_width = 320;
+            img_width = 400;
         if (img_height < 1)
-            img_height = 240;
+            img_height = 400;
         sizeSet = true;
     }
 
@@ -328,6 +330,7 @@ public class ImageToGif {
         int nPix = len / 3;
         indexedPixels = new byte[nPix];
         NeuQuant nq = new NeuQuant(pixels, len, sample);
+
         // initialize quantizer
         colorTab = nq.process(); // create reduced palette
         // convert map from BGR to RGB
@@ -459,7 +462,7 @@ public class ImageToGif {
      */
     public static void writePalette() throws IOException {
         output_gif.write(colorTab, 0, colorTab.length);
-        int n = (3 * 256) - colorTab.length;
+        int n = (3 * color_num) - colorTab.length;
         for (int i = 0; i < n; i++) {
             output_gif.write(0);
         }
@@ -507,7 +510,7 @@ class NeuQuant {
      * receive copies from any such party to do so, with the only requirement being
      * that this copyright notice remain intact.
      */
-    public static final int netsize = 256; /* number of colours used */
+    public static int netsize = ImageToGif.color_num; /* number of colours used */
 
     /* four primes near 500 - assume no image has a length so large */
     /* that it is divisible by all four primes */
@@ -603,7 +606,7 @@ class NeuQuant {
     // typedef int pixel[4]; /* BGRc */
     public static int[][] network; /* the network itself - [netsize][4] */
 
-    public static int[] netindex = new int[256];
+    public static int[] netindex = new int[netsize];
 
     /* for network lookup - really 256 */
 
@@ -706,7 +709,7 @@ class NeuQuant {
             }
         }
         netindex[previouscol] = (startpos + maxnetpos) >> 1;
-        for (j = previouscol + 1; j < 256; j++)
+        for (j = previouscol + 1; j < netsize; j++)
             netindex[j] = maxnetpos; /* really 256 */
     }
 
@@ -1015,6 +1018,8 @@ class LZWEncoder {
      */
     private static final int EOF = -1;
 
+    private static final int netsize = ImageToGif.color_num;
+
     private int imgW, imgH;
 
     private byte[] pixAry;
@@ -1111,7 +1116,7 @@ class LZWEncoder {
     int a_count;
 
     // Define the storage for the packet accumulator
-    byte[] accum = new byte[256];
+    byte[] accum = new byte[netsize];
 
     // ----------------------------------------------------------------------------
     LZWEncoder(int width, int height, byte[] pixels, int color_depth) {
